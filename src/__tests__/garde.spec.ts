@@ -1,0 +1,82 @@
+import { createPinia, setActivePinia } from 'pinia'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { createMemoryHistory } from 'vue-router'
+
+import { camille, simulerSessionOuverte } from '@/__tests__/outils'
+import { creerRouteur } from '@/router'
+import { destinationApresConnexion } from '@/router/redirection'
+import AccueilView from '@/views/AccueilView.vue'
+
+function nouveauRouteur() {
+  setActivePinia(createPinia())
+  const router = creerRouteur(createMemoryHistory())
+  router.addRoute({
+    path: '/back-office',
+    name: 'back-office',
+    component: AccueilView,
+    meta: { roles: ['agent', 'administrateur'] },
+  })
+  return router
+}
+
+describe('garde de navigation', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it('une page réservée renvoie un visiteur vers la connexion en gardant la page demandée', async () => {
+    const router = nouveauRouteur()
+
+    await router.push('/mon-compte')
+
+    expect(router.currentRoute.value.name).toBe('connexion')
+    expect(router.currentRoute.value.query.redirection).toBe('/mon-compte')
+  })
+
+  it('un compte connecté accède à son espace et n a plus accès à la connexion', async () => {
+    simulerSessionOuverte()
+    const router = nouveauRouteur()
+
+    await router.push('/mon-compte')
+    expect(router.currentRoute.value.name).toBe('mon-compte')
+
+    await router.push('/connexion')
+    expect(router.currentRoute.value.name).toBe('mon-compte')
+  })
+
+  it('une page réservée à d autres rôles renvoie vers l accueil', async () => {
+    simulerSessionOuverte()
+    const router = nouveauRouteur()
+    await router.push('/back-office')
+    expect(router.currentRoute.value.name).toBe('accueil')
+
+    simulerSessionOuverte({ ...camille, role: 'agent' })
+    const routeurAgent = nouveauRouteur()
+    await routeurAgent.push('/back-office')
+    expect(routeurAgent.currentRoute.value.name).toBe('back-office')
+  })
+
+  it('une adresse inconnue renvoie vers l accueil et chaque page a son titre', async () => {
+    const router = nouveauRouteur()
+
+    await router.push('/page-inconnue')
+    expect(router.currentRoute.value.name).toBe('accueil')
+    expect(document.title).toBe('Le Grand Cinéma')
+
+    await router.push('/inscription')
+    expect(document.title).toBe('Créer un compte – Le Grand Cinéma')
+  })
+})
+
+describe('destinationApresConnexion', () => {
+  it('ramène à une page interne du site, sinon à l espace du compte', () => {
+    expect(destinationApresConnexion('/mon-compte?onglet=billets')).toBe(
+      '/mon-compte?onglet=billets',
+    )
+    expect(destinationApresConnexion('//site-externe.example')).toEqual({ name: 'mon-compte' })
+    expect(destinationApresConnexion('https://site-externe.example')).toEqual({
+      name: 'mon-compte',
+    })
+    expect(destinationApresConnexion(undefined)).toEqual({ name: 'mon-compte' })
+  })
+})
