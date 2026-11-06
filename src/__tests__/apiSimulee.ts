@@ -19,4 +19,5 @@ export const brancherAuthentification = vi.fn<typeof original.brancherAuthentifi
 export const api = {
   get: vi.fn<typeof original.api.get>(),
   post: vi.fn<typeof original.api.post>(),
+  put: vi.fn<typeof original.api.put>(),
 }

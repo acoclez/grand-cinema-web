@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 
+import { useSessionExpiree } from '@/composables/useSessionExpiree'
 import { ErreurApi, MESSAGE_ERREUR_INATTENDUE } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
-const route = useRoute()
-const router = useRouter()
+const { rediriger } = useSessionExpiree()
 const erreur = ref<string | null>(null)
 
 // Le profil est relu à chaque visite, ce qui vérifie aussi que le jeton est encore accepté.
@@ -15,9 +14,7 @@ onMounted(async () => {
   try {
     await auth.chargerProfil()
   } catch (e) {
-    if (e instanceof ErreurApi && e.statut === 401) {
-      auth.fermerSession()
-      await router.push({ name: 'connexion', query: { redirection: route.fullPath } })
+    if (await rediriger(e)) {
       return
     }
     erreur.value = e instanceof ErreurApi ? e.message : MESSAGE_ERREUR_INATTENDUE
