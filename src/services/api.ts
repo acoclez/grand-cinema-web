@@ -55,7 +55,11 @@ function lireErreurs(donnees: unknown): ErreursDeChamps {
   return {}
 }
 
-async function requete<T>(methode: 'GET' | 'POST', chemin: string, corps?: unknown): Promise<T> {
+async function requete<T>(
+  methode: 'GET' | 'POST' | 'PUT',
+  chemin: string,
+  corps?: unknown,
+): Promise<T> {
   const entetes: Record<string, string> = { Accept: 'application/json' }
   const options: RequestInit = { method: methode, headers: entetes }
   if (corps !== undefined) {
@@ -95,4 +99,5 @@ async function requete<T>(methode: 'GET' | 'POST', chemin: string, corps?: unkno
 export const api = {
   get: <T>(chemin: string) => requete<T>('GET', chemin),
   post: <T>(chemin: string, corps?: unknown) => requete<T>('POST', chemin, corps),
+  put: <T>(chemin: string, corps: unknown) => requete<T>('PUT', chemin, corps),
 }

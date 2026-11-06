@@ -1,7 +1,7 @@
 import { flushPromises } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { monter, simulerSessionOuverte } from '@/__tests__/outils'
+import { administrateur, monter, simulerSessionOuverte } from '@/__tests__/outils'
 import App from '@/App.vue'
 import { api } from '@/services/api'
 
@@ -33,6 +33,16 @@ describe('en-tête et accueil', () => {
     expect(api.post).toHaveBeenCalledWith('/auth/deconnexion')
     expect(router.currentRoute.value.name).toBe('accueil')
     expect(page.findAll('nav a').map((lien) => lien.text())).toContain('Se connecter')
+  })
+
+  it('seul l administrateur voit le lien vers la gestion des films', async () => {
+    simulerSessionOuverte()
+    const spectateur = await monter(App)
+    expect(spectateur.page.find('nav[aria-label="Back-office"]').exists()).toBe(false)
+
+    simulerSessionOuverte(administrateur)
+    const { page } = await monter(App)
+    expect(page.find('nav[aria-label="Back-office"] a').attributes('href')).toBe('/admin/films')
   })
 
   it('l accueil salue un compte connecté', async () => {

@@ -56,6 +56,25 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/views/MonCompteView.vue'),
     meta: { titre: 'Mon espace', connexionRequise: true },
   },
+  {
+    path: '/admin/films',
+    name: 'admin-films',
+    component: () => import('@/views/administration/FilmsView.vue'),
+    meta: { titre: 'Films', roles: ['administrateur'] },
+  },
+  {
+    path: '/admin/films/nouveau',
+    name: 'admin-film-nouveau',
+    component: () => import('@/views/administration/FilmFormulaireView.vue'),
+    meta: { titre: 'Ajouter un film', roles: ['administrateur'] },
+  },
+  {
+    path: '/admin/films/:id(\\d+)/modifier',
+    name: 'admin-film-modifier',
+    component: () => import('@/views/administration/FilmFormulaireView.vue'),
+    props: (route) => ({ id: Number(route.params.id) }),
+    meta: { titre: 'Modifier un film', roles: ['administrateur'] },
+  },
   { path: '/:chemin(.*)*', redirect: '/' },
 ]
 

@@ -62,6 +62,17 @@ describe('service api', () => {
     expect(options.body).toBeUndefined()
   })
 
+  it('envoie une modification en PUT avec son corps', async () => {
+    fetchSimule.mockResolvedValue(reponseJson(200, { data: {} }))
+
+    await api.put('/admin/films/4', { titre: 'Brume' })
+
+    const { url, options } = derniereRequete()
+    expect(url).toMatch(/\/admin\/films\/4$/)
+    expect(options.method).toBe('PUT')
+    expect(options.body).toBe('{"titre":"Brume"}')
+  })
+
   it('renvoie undefined pour une réponse sans contenu', async () => {
     fetchSimule.mockResolvedValue(new Response(null, { status: 204 }))
 
