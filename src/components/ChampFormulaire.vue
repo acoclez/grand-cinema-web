@@ -33,7 +33,6 @@ const descriptions = computed(
 
 // Attributs communs aux trois formes de champ.
 const attributs = computed(() => ({
-  id: props.id,
   required: !props.facultatif,
   'aria-invalid': props.erreur ? ('true' as const) : undefined,
   'aria-describedby': descriptions.value,
@@ -45,13 +44,14 @@ const attributs = computed(() => ({
     <label :for="id">
       {{ libelle }}<span v-if="facultatif" class="champ__facultatif"> (facultatif)</span>
     </label>
-    <textarea v-if="multiligne" v-model="valeur" v-bind="attributs" rows="5"></textarea>
-    <select v-else-if="options" v-model="valeur" v-bind="attributs">
+    <textarea v-if="multiligne" :id="id" v-model="valeur" v-bind="attributs" rows="5"></textarea>
+    <select v-else-if="options" :id="id" v-model="valeur" v-bind="attributs">
       <option value="" disabled>Choisir…</option>
       <option v-for="option in options" :key="option" :value="option">{{ option }}</option>
     </select>
     <input
       v-else
+      :id="id"
       v-model="valeur"
       v-bind="attributs"
       :type="type ?? 'text'"
