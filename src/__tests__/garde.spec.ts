@@ -2,7 +2,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createMemoryHistory } from 'vue-router'
 
-import { camille, simulerSessionOuverte } from '@/__tests__/outils'
+import { administrateur, camille, simulerSessionOuverte } from '@/__tests__/outils'
 import { creerRouteur } from '@/router'
 import { destinationApresConnexion } from '@/router/redirection'
 import AccueilView from '@/views/AccueilView.vue'
@@ -54,6 +54,24 @@ describe('garde de navigation', () => {
     const routeurAgent = nouveauRouteur()
     await routeurAgent.push('/back-office')
     expect(routeurAgent.currentRoute.value.name).toBe('back-office')
+  })
+
+  it('la gestion des films est réservée à l administrateur', async () => {
+    simulerSessionOuverte({ ...camille, role: 'agent' })
+    const routeurAgent = nouveauRouteur()
+    await routeurAgent.push('/admin/films')
+    expect(routeurAgent.currentRoute.value.name).toBe('accueil')
+
+    simulerSessionOuverte(administrateur)
+    const routeurAdmin = nouveauRouteur()
+    await routeurAdmin.push('/admin/films/3/modifier')
+    expect(routeurAdmin.currentRoute.value.name).toBe('admin-film-modifier')
+    expect(routeurAdmin.currentRoute.value.params.id).toBe('3')
+    expect(document.title).toBe('Modifier un film – Le Grand Cinéma')
+
+    // Un identifiant qui n'est pas un nombre ne correspond à aucune page.
+    await routeurAdmin.push('/admin/films/abc/modifier')
+    expect(routeurAdmin.currentRoute.value.name).toBe('accueil')
   })
 
   it('une adresse inconnue renvoie vers l accueil et chaque page a son titre', async () => {
