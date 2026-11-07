@@ -75,6 +75,31 @@ export const routes: RouteRecordRaw[] = [
     props: (route) => ({ id: Number(route.params.id) }),
     meta: { titre: 'Modifier un film', roles: ['administrateur'] },
   },
+  {
+    path: '/admin/seances',
+    name: 'admin-seances',
+    component: () => import('@/views/administration/SeancesView.vue'),
+    meta: { titre: 'Séances', roles: ['administrateur'] },
+  },
+  {
+    path: '/admin/seances/nouvelle',
+    name: 'admin-seance-nouvelle',
+    component: () => import('@/views/administration/SeanceFormulaireView.vue'),
+    meta: { titre: 'Programmer une séance', roles: ['administrateur'] },
+  },
+  {
+    path: '/admin/seances/:id(\\d+)/modifier',
+    name: 'admin-seance-modifier',
+    component: () => import('@/views/administration/SeanceFormulaireView.vue'),
+    props: (route) => ({ id: Number(route.params.id) }),
+    meta: { titre: 'Modifier une séance', roles: ['administrateur'] },
+  },
+  {
+    path: '/admin/salles',
+    name: 'admin-salles',
+    component: () => import('@/views/administration/SallesView.vue'),
+    meta: { titre: 'Salles', roles: ['administrateur'] },
+  },
   { path: '/:chemin(.*)*', redirect: '/' },
 ]
 

@@ -74,6 +74,22 @@ describe('garde de navigation', () => {
     expect(routeurAdmin.currentRoute.value.name).toBe('accueil')
   })
 
+  it('la gestion des séances et des salles est réservée à l administrateur', async () => {
+    simulerSessionOuverte({ ...camille, role: 'agent' })
+    const routeurAgent = nouveauRouteur()
+    await routeurAgent.push('/admin/seances')
+    expect(routeurAgent.currentRoute.value.name).toBe('accueil')
+
+    simulerSessionOuverte(administrateur)
+    const routeurAdmin = nouveauRouteur()
+    await routeurAdmin.push('/admin/seances/5/modifier')
+    expect(routeurAdmin.currentRoute.value.name).toBe('admin-seance-modifier')
+    expect(document.title).toBe('Modifier une séance – Le Grand Cinéma')
+
+    await routeurAdmin.push('/admin/salles')
+    expect(document.title).toBe('Salles – Le Grand Cinéma')
+  })
+
   it('une adresse inconnue renvoie vers l accueil et chaque page a son titre', async () => {
     const router = nouveauRouteur()
 
