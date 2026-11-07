@@ -35,14 +35,16 @@ describe('en-tête et accueil', () => {
     expect(page.findAll('nav a').map((lien) => lien.text())).toContain('Se connecter')
   })
 
-  it('seul l administrateur voit le lien vers la gestion des films', async () => {
+  it('seul l administrateur voit les liens du back-office', async () => {
     simulerSessionOuverte()
     const spectateur = await monter(App)
     expect(spectateur.page.find('nav[aria-label="Back-office"]').exists()).toBe(false)
 
     simulerSessionOuverte(administrateur)
     const { page } = await monter(App)
-    expect(page.find('nav[aria-label="Back-office"] a').attributes('href')).toBe('/admin/films')
+    expect(
+      page.findAll('nav[aria-label="Back-office"] a').map((lien) => lien.attributes('href')),
+    ).toEqual(['/admin/films', '/admin/seances', '/admin/salles'])
   })
 
   it('l accueil salue un compte connecté', async () => {

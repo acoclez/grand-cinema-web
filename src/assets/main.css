@@ -313,3 +313,91 @@ a.bouton {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* Séances */
+.filtres {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.filtres select,
+.filtres input {
+  font: inherit;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+}
+
+.filtres__jours {
+  display: flex;
+  gap: 1rem;
+  padding-bottom: 0.6rem;
+}
+
+.tarif {
+  display: block;
+  white-space: nowrap;
+}
+
+.etat {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--rayon);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.etat--publiee {
+  color: var(--couleur-succes);
+  background: var(--couleur-succes-fond);
+}
+
+.etat--brouillon {
+  color: var(--couleur-texte-doux);
+  background: #f0efec;
+}
+
+.tarifs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+}
+
+.tarifs legend {
+  font-weight: 600;
+  padding: 0 0.25rem;
+}
+
+.tarifs__ligne {
+  display: grid;
+  grid-template-columns: 1fr 8rem auto;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.tarifs__ligne > .bouton-lien {
+  padding-bottom: 0.7rem;
+}
+
+.tarifs > .bouton-lien {
+  align-self: flex-start;
+}
+
+/* Sur un téléphone, le libellé et le prix d'un tarif passent l'un sous l'autre. */
+@media (max-width: 30rem) {
+  .tarifs__ligne {
+    grid-template-columns: 1fr;
+  }
+
+  .tarifs__ligne > .bouton-lien {
+    justify-self: start;
+    padding-bottom: 0;
+  }
+}

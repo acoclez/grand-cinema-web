@@ -8,6 +8,8 @@ import { CLE_SESSION } from '@/stores/auth'
 import type { ReponseJeton, Utilisateur } from '@/types/compte'
 import type { Film } from '@/types/film'
 import type { ListePaginee } from '@/types/pagination'
+import type { Salle } from '@/types/salle'
+import type { Seance } from '@/types/seance'
 
 export const camille: Utilisateur = {
   id: 1,
@@ -55,6 +57,38 @@ export function pageDeFilms(films: Film[], page = 1, dernierePage = 1): ListePag
   }
 }
 
+/** Salle standard, à compléter ou modifier selon le test. */
+export function salleDeTest(changements: Partial<Salle> = {}): Salle {
+  return {
+    id: 3,
+    nom: 'Salle 3',
+    type: 'standard',
+    capacite: 180,
+    places: 180,
+    places_pmr: 4,
+    ...changements,
+  }
+}
+
+/** Séance publiée le 20 novembre 2026 à 20 h 30, sans place vendue. */
+export function seanceDeTest(changements: Partial<Seance> = {}): Seance {
+  return {
+    id: 1,
+    film: { id: 1, titre: 'Le Souffle du Festival', duree_minutes: 112, archive: false },
+    salle: { id: 3, nom: 'Salle 3', type: 'standard', capacite: 180 },
+    debut: '2026-11-20T20:30:00+01:00',
+    fin: '2026-11-20T22:22:00+01:00',
+    langue: 'vo',
+    statut: 'publiee',
+    tarifs: [
+      { id: 1, libelle: 'Plein', prix_centimes: 950 },
+      { id: 2, libelle: 'Réduit', prix_centimes: 700 },
+    ],
+    places_vendues: 0,
+    ...changements,
+  }
+}
+
 export function reponseJeton(utilisateur: Utilisateur = camille): ReponseJeton {
   return { access_token: 'jeton-de-test', token_type: 'bearer', expires_in: 3600, utilisateur }
 }
@@ -67,16 +101,21 @@ export function simulerSessionOuverte(utilisateur: Utilisateur = camille): void 
   )
 }
 
-/** Monte un composant avec un store et un routeur neufs, sur l'adresse indiquée. */
+/**
+ * Monte un composant avec un store et un routeur neufs, sur l'adresse indiquée.
+ * preparer s'exécute juste avant le montage, par exemple pour choisir le jour affiché d'un store.
+ */
 export async function monter(
   composant: Component,
   adresse = '/',
   proprietes: Record<string, unknown> = {},
+  preparer: () => void = () => undefined,
 ) {
   const pinia = createPinia()
   setActivePinia(pinia)
   const router = creerRouteur(createMemoryHistory())
   await router.push(adresse)
+  preparer()
   const page = mount(composant, { props: proprietes, global: { plugins: [pinia, router] } })
   await flushPromises()
   return { page, router }

@@ -73,6 +73,17 @@ describe('service api', () => {
     expect(options.body).toBe('{"titre":"Brume"}')
   })
 
+  it('envoie une suppression en DELETE, sans corps', async () => {
+    fetchSimule.mockResolvedValue(new Response(null, { status: 204 }))
+
+    await expect(api.delete('/admin/seances/4')).resolves.toBeUndefined()
+
+    const { url, options } = derniereRequete()
+    expect(url).toMatch(/\/admin\/seances\/4$/)
+    expect(options.method).toBe('DELETE')
+    expect(options.body).toBeUndefined()
+  })
+
   it('renvoie undefined pour une réponse sans contenu', async () => {
     fetchSimule.mockResolvedValue(new Response(null, { status: 204 }))
 
