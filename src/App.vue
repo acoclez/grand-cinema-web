@@ -15,6 +15,9 @@ async function seDeconnecter() {
 <template>
   <header class="entete">
     <RouterLink :to="{ name: 'accueil' }" class="entete__marque">Le Grand Cinéma</RouterLink>
+    <nav aria-label="Programmation">
+      <RouterLink :to="{ name: 'films' }">Films à l'affiche</RouterLink>
+    </nav>
     <nav v-if="auth.aUnDesRoles(['administrateur'])" aria-label="Back-office">
       <RouterLink :to="{ name: 'admin-films' }">Films</RouterLink>
       <RouterLink :to="{ name: 'admin-seances' }">Séances</RouterLink>

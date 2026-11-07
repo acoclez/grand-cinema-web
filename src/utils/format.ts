@@ -60,3 +60,13 @@ export function centimesDe(saisie: string): number | null {
   }
   return Math.round(Number(texte) * 100)
 }
+
+/** Durée lisible d'un film: 112 minutes donne 1H52, 45 minutes donne 45 min. */
+export function dureeLisible(minutes: number): string {
+  const heures = Math.floor(minutes / 60)
+  const reste = minutes % 60
+  if (heures === 0) {
+    return `${reste} min`
+  }
+  return reste === 0 ? `${heures} h` : `${heures} h ${String(reste).padStart(2, '0')}`
+}

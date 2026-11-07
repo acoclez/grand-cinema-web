@@ -3,8 +3,8 @@ export const CLASSIFICATIONS = ['Tous publics', '-12', '-16', '-18'] as const
 
 export type Classification = (typeof CLASSIFICATIONS)[number]
 
-/** Film tel que l'API le renvoie au back-office, archivé ou non. */
-export interface Film {
+/** Film tel que le voit le public: à l'affiche, sans état d'archivage. */
+export interface FilmAlAffiche {
   id: number
   titre: string
   synopsis: string
@@ -14,6 +14,10 @@ export interface Film {
   langue_originale: string | null
   affiche_url: string | null
   bande_annonce_url: string | null
+}
+
+/** Film tel que l'API le renvoie au back-office, archivé ou non. */
+export interface Film extends FilmAlAffiche {
   archive: boolean
   /** Date d'archivage au format ISO 8601, null si le film est à l'affiche. */
   archive_le: string | null

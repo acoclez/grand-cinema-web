@@ -14,5 +14,8 @@ const auth = useAuthStore()
       <RouterLink :to="{ name: 'inscription' }">Créez votre compte</RouterLink> pour réserver vos
       places et retrouver vos billets.
     </p>
+    <p>
+      <RouterLink :to="{ name: 'films' }" class="bouton">Voir les films à l'affiche</RouterLink>
+    </p>
   </main>
 </template>

@@ -4,6 +4,7 @@ import {
   centimesDe,
   dateDe,
   decalerJour,
+  dureeLisible,
   heureDe,
   jourEnLettres,
   jourIso,
@@ -39,5 +40,12 @@ describe('mise en forme des dates et des prix', () => {
     expect(centimesDe('0')).toBe(0)
     expect(centimesDe('')).toBeNull()
     expect(centimesDe('neuf')).toBeNull()
+  })
+
+  it('écrit la durée d un film en heures et minutes', () => {
+    expect(dureeLisible(112)).toBe('1 h 52')
+    expect(dureeLisible(125)).toBe('2 h 05')
+    expect(dureeLisible(120)).toBe('2 h')
+    expect(dureeLisible(45)).toBe('45 min')
   })
 })

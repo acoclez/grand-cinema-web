@@ -16,9 +16,10 @@ describe('en-tête et accueil', () => {
   it('un visiteur peut se connecter ou créer un compte', async () => {
     const { page } = await monter(App)
 
-    const liens = page.findAll('nav a').map((lien) => lien.text())
+    const liens = page.findAll('nav[aria-label="Compte"] a').map((lien) => lien.text())
     expect(liens).toEqual(['Se connecter', 'Créer un compte'])
     expect(page.find('main').text()).toContain('Créez votre compte')
+    expect(page.find('nav[aria-label="Programmation"] a').attributes('href')).toBe('/films')
   })
 
   it('un compte connecté voit son espace et se déconnecte', async () => {

@@ -90,6 +90,18 @@ describe('garde de navigation', () => {
     expect(document.title).toBe('Salles – Le Grand Cinéma')
   })
 
+  it('les films à l affiche et leur fiche sont ouverts à tous, sans compte', async () => {
+    const router = nouveauRouteur()
+
+    await router.push('/films')
+    expect(router.currentRoute.value.name).toBe('films')
+    expect(document.title).toBe('Films à l’affiche – Le Grand Cinéma')
+
+    await router.push('/films/3')
+    expect(router.currentRoute.value.name).toBe('fiche-film')
+    expect(router.currentRoute.value.params.id).toBe('3')
+  })
+
   it('une adresse inconnue renvoie vers l accueil et chaque page a son titre', async () => {
     const router = nouveauRouteur()
 
