@@ -73,6 +73,19 @@ function pagesDeGestion(pages: PagesDeGestion): RouteRecordRaw[] {
 export const routes: RouteRecordRaw[] = [
   { path: '/', name: 'accueil', component: AccueilView },
   {
+    path: '/films',
+    name: 'films',
+    component: () => import('@/views/AlAfficheView.vue'),
+    meta: { titre: 'Films à l’affiche' },
+  },
+  {
+    path: '/films/:id(\\d+)',
+    name: 'fiche-film',
+    component: () => import('@/views/FicheFilmView.vue'),
+    props: (route) => ({ id: Number(route.params.id) }),
+    meta: { titre: 'Film' },
+  },
+  {
     path: '/connexion',
     name: 'connexion',
     component: () => import('@/views/ConnexionView.vue'),

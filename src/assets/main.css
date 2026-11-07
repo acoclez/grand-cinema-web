@@ -401,3 +401,87 @@ a.bouton {
     padding-bottom: 0;
   }
 }
+
+/* Films à l'affiche */
+.grille-films {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 1.5rem 1rem;
+}
+
+.carte-film__lien {
+  display: block;
+  color: var(--couleur-texte);
+  text-decoration: none;
+}
+
+.carte-film__lien:hover .carte-film__titre {
+  color: var(--couleur-accent);
+  text-decoration: underline;
+}
+
+.carte-film__titre {
+  font-size: 1rem;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.carte-film__details {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--couleur-texte-doux);
+}
+
+.affiche {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--rayon);
+  background: #f0efec;
+}
+
+.affiche--vide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--couleur-texte-doux);
+  border: 1px solid var(--couleur-bordure);
+}
+
+.fil-ariane {
+  margin: 0 0 1rem;
+}
+
+.fiche-film {
+  display: grid;
+  grid-template-columns: minmax(10rem, 16rem) 1fr;
+  align-items: start;
+  gap: 2rem;
+}
+
+.fiche-film__texte h1 {
+  margin-bottom: 1rem;
+}
+
+.fiche-film__texte h2 {
+  font-size: 1.25rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.fiche-film__synopsis {
+  max-width: 40rem;
+}
+
+@media (max-width: 40rem) {
+  .fiche-film {
+    grid-template-columns: 1fr;
+  }
+
+  .fiche-film .affiche {
+    max-width: 14rem;
+  }
+}
