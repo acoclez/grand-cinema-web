@@ -3,6 +3,7 @@ import {
   createWebHistory,
   type Router,
   type RouterHistory,
+  type RouteComponent,
   type RouteRecordRaw,
 } from 'vue-router'
 
@@ -21,6 +22,52 @@ declare module 'vue-router' {
     /** Page inutile une fois connecté (connexion, inscription). */
     visiteurSeulement?: boolean
   }
+}
+
+const ADMINISTRATEUR: Role[] = ['administrateur']
+
+interface PagesDeGestion {
+  /** Segment de l'adresse et du nom de la liste, par exemple seances. */
+  ressources: string
+  /** Nom des pages d'un élément, par exemple seance. */
+  ressource: string
+  /** Segment de l'adresse de création, accordé au nom: nouveau ou nouvelle. */
+  creation: string
+  /** Titres de la liste, de la création et de la modification. */
+  titres: [string, string, string]
+  liste: RouteComponent
+  formulaire: RouteComponent
+}
+
+/**
+ * Les trois pages du back-office d'une ressource, réservées à l'administrateur:
+ * la liste (admin-seances), la création (admin-seance-nouvelle) et la modification
+ * (admin-seance-modifier), qui reçoit l'identifiant en nombre. Un identifiant qui
+ * n'est pas un nombre ne correspond à aucune page.
+ */
+function pagesDeGestion(pages: PagesDeGestion): RouteRecordRaw[] {
+  const [titreListe, titreCreation, titreModification] = pages.titres
+  return [
+    {
+      path: `/admin/${pages.ressources}`,
+      name: `admin-${pages.ressources}`,
+      component: pages.liste,
+      meta: { titre: titreListe, roles: ADMINISTRATEUR },
+    },
+    {
+      path: `/admin/${pages.ressources}/${pages.creation}`,
+      name: `admin-${pages.ressource}-${pages.creation}`,
+      component: pages.formulaire,
+      meta: { titre: titreCreation, roles: ADMINISTRATEUR },
+    },
+    {
+      path: `/admin/${pages.ressources}/:id(\\d+)/modifier`,
+      name: `admin-${pages.ressource}-modifier`,
+      component: pages.formulaire,
+      props: (route) => ({ id: Number(route.params.id) }),
+      meta: { titre: titreModification, roles: ADMINISTRATEUR },
+    },
+  ]
 }
 
 export const routes: RouteRecordRaw[] = [
@@ -56,44 +103,22 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/views/MonCompteView.vue'),
     meta: { titre: 'Mon espace', connexionRequise: true },
   },
-  {
-    path: '/admin/films',
-    name: 'admin-films',
-    component: () => import('@/views/administration/FilmsView.vue'),
-    meta: { titre: 'Films', roles: ['administrateur'] },
-  },
-  {
-    path: '/admin/films/nouveau',
-    name: 'admin-film-nouveau',
-    component: () => import('@/views/administration/FilmFormulaireView.vue'),
-    meta: { titre: 'Ajouter un film', roles: ['administrateur'] },
-  },
-  {
-    path: '/admin/films/:id(\\d+)/modifier',
-    name: 'admin-film-modifier',
-    component: () => import('@/views/administration/FilmFormulaireView.vue'),
-    props: (route) => ({ id: Number(route.params.id) }),
-    meta: { titre: 'Modifier un film', roles: ['administrateur'] },
-  },
-  {
-    path: '/admin/seances',
-    name: 'admin-seances',
-    component: () => import('@/views/administration/SeancesView.vue'),
-    meta: { titre: 'Séances', roles: ['administrateur'] },
-  },
-  {
-    path: '/admin/seances/nouvelle',
-    name: 'admin-seance-nouvelle',
-    component: () => import('@/views/administration/SeanceFormulaireView.vue'),
-    meta: { titre: 'Programmer une séance', roles: ['administrateur'] },
-  },
-  {
-    path: '/admin/seances/:id(\\d+)/modifier',
-    name: 'admin-seance-modifier',
-    component: () => import('@/views/administration/SeanceFormulaireView.vue'),
-    props: (route) => ({ id: Number(route.params.id) }),
-    meta: { titre: 'Modifier une séance', roles: ['administrateur'] },
-  },
+  ...pagesDeGestion({
+    ressources: 'films',
+    ressource: 'film',
+    creation: 'nouveau',
+    titres: ['Films', 'Ajouter un film', 'Modifier un film'],
+    liste: () => import('@/views/administration/FilmsView.vue'),
+    formulaire: () => import('@/views/administration/FilmFormulaireView.vue'),
+  }),
+  ...pagesDeGestion({
+    ressources: 'seances',
+    ressource: 'seance',
+    creation: 'nouvelle',
+    titres: ['Séances', 'Programmer une séance', 'Modifier une séance'],
+    liste: () => import('@/views/administration/SeancesView.vue'),
+    formulaire: () => import('@/views/administration/SeanceFormulaireView.vue'),
+  }),
   {
     path: '/admin/salles',
     name: 'admin-salles',

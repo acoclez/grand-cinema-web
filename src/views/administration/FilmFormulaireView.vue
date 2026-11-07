@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { computed, reactive, watch } from 'vue'
+import { RouterLink } from 'vue-router'
 
 import ChampFormulaire from '@/components/ChampFormulaire.vue'
-import { useFormulaire } from '@/composables/useFormulaire'
-import { useSessionExpiree } from '@/composables/useSessionExpiree'
-import { ErreurApi, MESSAGE_ERREUR_INATTENDUE } from '@/services/api'
+import { useEdition } from '@/composables/useEdition'
 import { useGestionFilmsStore } from '@/stores/gestionFilms'
 import { CLASSIFICATIONS, type DonneesFilm, type Film } from '@/types/film'
 
@@ -13,9 +11,20 @@ import { CLASSIFICATIONS, type DonneesFilm, type Film } from '@/types/film'
 const props = defineProps<{ id?: number }>()
 
 const gestion = useGestionFilmsStore()
-const router = useRouter()
-const { rediriger } = useSessionExpiree()
-const { envoiEnCours, erreurGenerale, erreurs, envoyer } = useFormulaire()
+const {
+  envoiEnCours,
+  erreurGenerale,
+  erreurs,
+  chargement,
+  erreurChargement,
+  charger,
+  enregistrer,
+} = useEdition<DonneesFilm>({
+  introuvable: 'Ce film n’existe pas.',
+  pageDeRetour: 'admin-films',
+  creer: gestion.creer,
+  modifier: gestion.modifier,
+})
 
 // Les champs de saisie sont des textes, la durée est convertie en nombre à l'envoi.
 const saisie = reactive({
@@ -30,8 +39,6 @@ const saisie = reactive({
 })
 
 const modification = computed(() => props.id !== undefined)
-const chargement = ref(false)
-const erreurChargement = ref<string | null>(null)
 
 function remplir(film: Film) {
   Object.assign(saisie, {
@@ -62,44 +69,15 @@ function donnees(): DonneesFilm {
   }
 }
 
-function messageDeChargement(erreur: unknown): string {
-  if (!(erreur instanceof ErreurApi)) {
-    return MESSAGE_ERREUR_INATTENDUE
-  }
-  return erreur.statut === 404 ? 'Ce film n’existe pas.' : erreur.message
-}
-
 watch(
   () => props.id,
   async (id) => {
-    if (id === undefined) {
-      return
-    }
-    chargement.value = true
-    erreurChargement.value = null
-    try {
-      remplir(await gestion.charger(id))
-    } catch (e) {
-      if (await rediriger(e)) {
-        return
-      }
-      erreurChargement.value = messageDeChargement(e)
-    } finally {
-      chargement.value = false
+    if (id !== undefined) {
+      await charger(async () => remplir(await gestion.charger(id)))
     }
   },
   { immediate: true },
 )
-
-async function enregistrer() {
-  const id = props.id
-  const reussi = await envoyer(() =>
-    id === undefined ? gestion.creer(donnees()) : gestion.modifier(id, donnees()),
-  )
-  if (reussi) {
-    await router.push({ name: 'admin-films' })
-  }
-}
 </script>
 
 <template>
@@ -117,7 +95,7 @@ async function enregistrer() {
         {{ erreurGenerale }}
       </p>
 
-      <form @submit.prevent="enregistrer">
+      <form @submit.prevent="enregistrer(props.id, donnees)">
         <ChampFormulaire
           id="film-titre"
           v-model="saisie.titre"

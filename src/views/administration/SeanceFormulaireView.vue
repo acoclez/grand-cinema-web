@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink } from 'vue-router'
 
 import ChampFormulaire from '@/components/ChampFormulaire.vue'
-import { useFormulaire } from '@/composables/useFormulaire'
-import { useSessionExpiree } from '@/composables/useSessionExpiree'
-import { ErreurApi, MESSAGE_ERREUR_INATTENDUE } from '@/services/api'
+import { useEdition } from '@/composables/useEdition'
 import { useGestionSeancesStore } from '@/stores/gestionSeances'
 import type { Film } from '@/types/film'
 import type { OptionChamp } from '@/types/formulaire'
@@ -17,9 +15,20 @@ import { centimesDe, dateDe, heureDe, saisieDePrix } from '@/utils/format'
 const props = defineProps<{ id?: number }>()
 
 const gestion = useGestionSeancesStore()
-const router = useRouter()
-const { rediriger } = useSessionExpiree()
-const { envoiEnCours, erreurGenerale, erreurs, envoyer } = useFormulaire()
+const {
+  envoiEnCours,
+  erreurGenerale,
+  erreurs,
+  chargement,
+  erreurChargement,
+  charger,
+  enregistrer,
+} = useEdition<DonneesSeance>({
+  introuvable: 'Cette séance n’existe pas.',
+  pageDeRetour: 'admin-seances',
+  creer: gestion.creer,
+  modifier: gestion.modifier,
+})
 
 // Les champs de saisie sont des textes. Les identifiants et les prix sont convertis à l'envoi.
 const saisie = reactive({ film_id: '', salle_id: '', date: gestion.jour, heure: '', langue: '' })
@@ -46,8 +55,6 @@ const tarifs = ref<LigneTarif[]>([
 const films = ref<Film[]>([])
 const salles = ref<Salle[]>([])
 const modification = computed(() => props.id !== undefined)
-const chargement = ref(true)
-const erreurChargement = ref<string | null>(null)
 const verrouillee = ref(false)
 
 const optionsFilms = computed<OptionChamp[]>(() =>
@@ -100,19 +107,10 @@ function retirerTarif(cle: number) {
   tarifs.value = tarifs.value.filter((tarif) => tarif.cle !== cle)
 }
 
-function messageDeChargement(erreur: unknown): string {
-  if (!(erreur instanceof ErreurApi)) {
-    return MESSAGE_ERREUR_INATTENDUE
-  }
-  return erreur.statut === 404 ? 'Cette séance n’existe pas.' : erreur.message
-}
-
 watch(
   () => props.id,
-  async (id) => {
-    chargement.value = true
-    erreurChargement.value = null
-    try {
+  (id) =>
+    charger(async () => {
       const [listeFilms, listeSalles, seance] = await Promise.all([
         gestion.chargerFilms(),
         gestion.chargerSalles(),
@@ -123,27 +121,9 @@ watch(
       if (seance) {
         remplir(seance)
       }
-    } catch (e) {
-      if (await rediriger(e)) {
-        return
-      }
-      erreurChargement.value = messageDeChargement(e)
-    } finally {
-      chargement.value = false
-    }
-  },
+    }),
   { immediate: true },
 )
-
-async function enregistrer() {
-  const id = props.id
-  const reussi = await envoyer(() =>
-    id === undefined ? gestion.creer(donnees()) : gestion.modifier(id, donnees()),
-  )
-  if (reussi) {
-    await router.push({ name: 'admin-seances' })
-  }
-}
 </script>
 
 <template>
@@ -165,7 +145,7 @@ async function enregistrer() {
         {{ erreurGenerale }}
       </p>
 
-      <form @submit.prevent="enregistrer">
+      <form @submit.prevent="enregistrer(props.id, donnees)">
         <ChampFormulaire
           id="seance-film"
           v-model="saisie.film_id"
