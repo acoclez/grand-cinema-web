@@ -64,7 +64,9 @@ const clavier = computed(() => {
     </label>
     <textarea v-if="multiligne" :id="id" v-model="valeur" v-bind="attributs" rows="5"></textarea>
     <select v-else-if="options" :id="id" v-model="valeur" v-bind="attributs">
-      <option value="" disabled>Choisir…</option>
+      <option value="" :disabled="!facultatif">
+        {{ facultatif ? 'Non précisé' : 'Choisir…' }}
+      </option>
       <option v-for="option in choix" :key="option.valeur" :value="option.valeur">
         {{ option.libelle }}
       </option>
