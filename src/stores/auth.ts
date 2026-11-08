@@ -4,6 +4,7 @@ import { computed, ref } from 'vue'
 import { api, brancherAuthentification } from '@/services/api'
 import type {
   DonneesInscription,
+  DonneesProfil,
   DonneesReinitialisation,
   ReponseJeton,
   ReponseMessage,
@@ -44,6 +45,8 @@ function lireSessionEnregistree(): Session | null {
  */
 export const useAuthStore = defineStore('auth', () => {
   const session = ref<Session | null>(null)
+  /** Message à afficher sur l'accueil, par exemple après la suppression du compte. */
+  const annonce = ref<string | null>(null)
   let minuterie: ReturnType<typeof setTimeout> | undefined
 
   const utilisateur = computed(() => session.value?.utilisateur ?? null)
@@ -90,12 +93,27 @@ export const useAuthStore = defineStore('auth', () => {
     fermerSession()
   }
 
+  function remplacerProfil(profil: Utilisateur): void {
+    if (session.value !== null) {
+      enregistrer({ ...session.value, utilisateur: profil })
+    }
+  }
+
   /** Recharge le profil depuis l'API. */
   async function chargerProfil(): Promise<void> {
-    const reponse = await api.get<{ data: Utilisateur }>('/auth/moi')
-    if (session.value !== null) {
-      enregistrer({ ...session.value, utilisateur: reponse.data })
-    }
+    remplacerProfil((await api.get<{ data: Utilisateur }>('/auth/moi')).data)
+  }
+
+  /** Enregistre les coordonnées, le pays de résidence et le consentement aux e-mails. */
+  async function modifierProfil(donnees: DonneesProfil): Promise<void> {
+    remplacerProfil((await api.put<{ data: Utilisateur }>('/auth/moi', donnees)).data)
+  }
+
+  /** Supprime le compte, confirmé par le mot de passe, puis ferme la session. */
+  async function supprimerCompte(password: string): Promise<void> {
+    await api.delete<void>('/auth/moi', { password })
+    fermerSession()
+    annonce.value = 'Votre compte est supprimé: vos données personnelles sont effacées.'
   }
 
   async function demanderLien(email: string): Promise<string> {
@@ -115,6 +133,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     session,
+    annonce,
     utilisateur,
     jeton,
     estConnecte,
@@ -123,6 +142,8 @@ export const useAuthStore = defineStore('auth', () => {
     connecter,
     deconnecter,
     chargerProfil,
+    modifierProfil,
+    supprimerCompte,
     demanderLien,
     reinitialiser,
     aUnDesRoles,

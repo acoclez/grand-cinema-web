@@ -211,7 +211,7 @@ a.bouton:hover {
   background: var(--couleur-succes-fond);
 }
 
-/* Mon espace */
+/* Liste de définitions: fiche d'un film */
 .profil {
   display: grid;
   grid-template-columns: max-content 1fr;
@@ -224,6 +224,29 @@ a.bouton:hover {
 
 .profil dd {
   margin: 0;
+}
+
+/* Mon espace */
+.zone-sensible {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--couleur-bordure);
+}
+
+.zone-sensible__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+}
+
+.bouton--danger {
+  background: var(--couleur-erreur);
+}
+
+.bouton--danger:hover {
+  background: #8c1d17;
 }
 
 /* Back-office */

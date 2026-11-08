@@ -30,6 +30,16 @@ export interface DonneesInscription {
   conditions_acceptees: boolean
 }
 
+/** Données envoyées à la modification du profil (US-06). */
+export interface DonneesProfil {
+  prenom: string
+  nom: string
+  email: string
+  /** Code ISO 3166-1 alpha-2, ou null si le spectateur ne le précise pas. */
+  pays_residence: string | null
+  consentement_emails: boolean
+}
+
 export interface DonneesReinitialisation {
   token: string
   email: string
