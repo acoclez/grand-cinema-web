@@ -485,3 +485,99 @@ a.bouton {
     max-width: 14rem;
   }
 }
+
+/* Séances du public */
+.accueil__liens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.seances__jour {
+  margin: 0 0 1rem;
+  font-weight: 600;
+}
+
+.seances-film {
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  align-items: start;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--couleur-bordure);
+}
+
+.seances-film__titre {
+  font-size: 1.125rem;
+  margin: 0 0 0.25rem;
+}
+
+.horaires {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.horaire {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 9rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  font-size: 0.875rem;
+}
+
+.horaire__heure {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.horaire__version {
+  font-weight: 600;
+}
+
+.horaire__salle,
+.horaire__places {
+  color: var(--couleur-texte-doux);
+}
+
+.horaire--complet {
+  background: #f0efec;
+}
+
+.horaire--complet .horaire__heure {
+  color: var(--couleur-texte-doux);
+}
+
+.remplissage {
+  align-self: flex-start;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--rayon);
+  font-weight: 600;
+}
+
+.remplissage--bientot {
+  color: var(--couleur-accent-fonce);
+  background: var(--couleur-erreur-fond);
+}
+
+.remplissage--complet {
+  color: var(--couleur-texte);
+  background: var(--couleur-bordure);
+}
+
+@media (max-width: 30rem) {
+  .seances-film {
+    grid-template-columns: 4rem 1fr;
+  }
+
+  .horaire {
+    flex: 1 1 8rem;
+    min-width: 0;
+  }
+}

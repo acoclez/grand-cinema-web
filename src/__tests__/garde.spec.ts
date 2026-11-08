@@ -100,6 +100,10 @@ describe('garde de navigation', () => {
     await router.push('/films/3')
     expect(router.currentRoute.value.name).toBe('fiche-film')
     expect(router.currentRoute.value.params.id).toBe('3')
+
+    await router.push('/seances')
+    expect(router.currentRoute.value.name).toBe('seances')
+    expect(document.title).toBe('Séances – Le Grand Cinéma')
   })
 
   it('une adresse inconnue renvoie vers l accueil et chaque page a son titre', async () => {
