@@ -1,3 +1,4 @@
+import type { FilmAlAffiche } from '@/types/film'
 import type { TypeSalle } from '@/types/salle'
 
 export type LangueSeance = 'vo' | 'vf'
@@ -37,4 +38,29 @@ export interface DonneesSeance {
   debut: string
   langue: LangueSeance | ''
   tarifs: { libelle: string; prix_centimes: number | null }[]
+}
+
+/** Séance telle que la voit un visiteur sur la page des séances (US-02). */
+export interface SeancePublique {
+  id: number
+  film: Pick<
+    FilmAlAffiche,
+    'id' | 'titre' | 'duree_minutes' | 'genre' | 'classification' | 'affiche_url'
+  >
+  salle: { nom: string; type: TypeSalle }
+  /** Début et fin au format ISO 8601, à l'heure de Paris. */
+  debut: string
+  fin: string
+  langue: LangueSeance
+  places_restantes: number
+  /** Au moins 90 % des places sont vendues. */
+  bientot_complet: boolean
+  /** Plus aucune place: la séance ne se réserve plus. */
+  complet: boolean
+}
+
+/** Séances d'un film pour la date choisie. */
+export interface SeancesDUnFilm {
+  film: SeancePublique['film']
+  seances: SeancePublique[]
 }

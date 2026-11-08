@@ -19,7 +19,8 @@ describe('en-tête et accueil', () => {
     const liens = page.findAll('nav[aria-label="Compte"] a').map((lien) => lien.text())
     expect(liens).toEqual(['Se connecter', 'Créer un compte'])
     expect(page.find('main').text()).toContain('Créez votre compte')
-    expect(page.find('nav[aria-label="Programmation"] a').attributes('href')).toBe('/films')
+    const programmation = page.findAll('nav[aria-label="Programmation"] a')
+    expect(programmation.map((lien) => lien.attributes('href'))).toEqual(['/films', '/seances'])
   })
 
   it('un compte connecté voit son espace et se déconnecte', async () => {

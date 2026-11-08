@@ -9,7 +9,7 @@ import type { ReponseJeton, Utilisateur } from '@/types/compte'
 import type { Film } from '@/types/film'
 import type { ListePaginee } from '@/types/pagination'
 import type { Salle } from '@/types/salle'
-import type { Seance } from '@/types/seance'
+import type { Seance, SeancePublique } from '@/types/seance'
 
 export const camille: Utilisateur = {
   id: 1,
@@ -85,6 +85,29 @@ export function seanceDeTest(changements: Partial<Seance> = {}): Seance {
       { id: 2, libelle: 'Réduit', prix_centimes: 700 },
     ],
     places_vendues: 0,
+    ...changements,
+  }
+}
+
+/** Séance du public le 12 novembre 2026 à 20 h 30, avec toutes ses places libres. */
+export function seancePubliqueDeTest(changements: Partial<SeancePublique> = {}): SeancePublique {
+  return {
+    id: 1,
+    film: {
+      id: 1,
+      titre: 'Le Souffle du Festival',
+      duree_minutes: 112,
+      genre: 'Comédie dramatique',
+      classification: 'Tous publics',
+      affiche_url: null,
+    },
+    salle: { nom: 'Salle 3', type: 'standard' },
+    debut: '2026-11-12T20:30:00+01:00',
+    fin: '2026-11-12T22:22:00+01:00',
+    langue: 'vf',
+    places_restantes: 180,
+    bientot_complet: false,
+    complet: false,
     ...changements,
   }
 }

@@ -86,6 +86,12 @@ export const routes: RouteRecordRaw[] = [
     meta: { titre: 'Film' },
   },
   {
+    path: '/seances',
+    name: 'seances',
+    component: () => import('@/views/SeancesDuJourView.vue'),
+    meta: { titre: 'Séances' },
+  },
+  {
     path: '/connexion',
     name: 'connexion',
     component: () => import('@/views/ConnexionView.vue'),
