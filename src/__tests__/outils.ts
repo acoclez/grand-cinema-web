@@ -85,6 +85,7 @@ export function seanceDeTest(changements: Partial<Seance> = {}): Seance {
       { id: 2, libelle: 'Réduit', prix_centimes: 700 },
     ],
     places_vendues: 0,
+    remplissage: { en_ligne: 0, guichet: 0, en_attente: 0, taux: 0 },
     ...changements,
   }
 }

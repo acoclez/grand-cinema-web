@@ -60,6 +60,25 @@ async function agir(action: () => Promise<void>) {
 
 const legende = computed(() => `Séances du ${jourEnLettres(gestion.jour)}`)
 
+function placesVendues(seance: Seance): number {
+  return seance.remplissage.en_ligne + seance.remplissage.guichet
+}
+
+/** Remplissage des séances publiées affichées: places vendues sur l'ensemble de leurs places. */
+const bilan = computed(() => {
+  const publiees = gestion.seances.filter((seance) => seance.statut === 'publiee')
+  const capacite = publiees.reduce((total, seance) => total + seance.salle.capacite, 0)
+  if (capacite === 0) {
+    return null
+  }
+  const vendues = publiees.reduce((total, seance) => total + placesVendues(seance), 0)
+  return {
+    vendues: vendues.toLocaleString('fr-FR'),
+    capacite: capacite.toLocaleString('fr-FR'),
+    taux: Math.round((vendues * 100) / capacite),
+  }
+})
+
 function intitule(seance: Seance): string {
   return `${seance.film.titre} à ${heureDe(seance.debut)}`
 }
@@ -120,9 +139,14 @@ onUnmounted(() => {
       <div class="filtres__jours">
         <button type="button" class="bouton-lien" @click="changerDeJour(-1)">Jour précédent</button>
         <button type="button" class="bouton-lien" @click="changerDeJour(1)">Jour suivant</button>
+        <button type="button" class="bouton-lien" @click="changerDeFiltre">Actualiser</button>
       </div>
     </div>
 
+    <p v-if="!chargement && bilan" class="bilan-remplissage">
+      Remplissage des séances publiées: {{ bilan.taux }} % ({{ bilan.vendues }} places vendues sur
+      {{ bilan.capacite }}).
+    </p>
     <p v-if="chargement" role="status">Chargement des séances…</p>
     <p v-else-if="gestion.seances.length === 0 && !erreur">
       Aucune séance programmée le {{ jourEnLettres(gestion.jour) }}.
@@ -143,7 +167,7 @@ onUnmounted(() => {
             <th scope="col">Version</th>
             <th scope="col">Tarifs</th>
             <th scope="col">État</th>
-            <th scope="col">Places vendues</th>
+            <th scope="col">Remplissage</th>
             <th scope="col"><span class="visuellement-cache">Actions</span></th>
           </tr>
         </thead>
@@ -163,7 +187,18 @@ onUnmounted(() => {
                 {{ seance.statut === 'publiee' ? 'Publiée' : 'Brouillon' }}
               </span>
             </td>
-            <td>{{ seance.places_vendues }} / {{ seance.salle.capacite }}</td>
+            <td class="remplissage-seance">
+              <meter min="0" max="100" :value="seance.remplissage.taux" aria-hidden="true"></meter>
+              <span class="remplissage-seance__taux">{{ seance.remplissage.taux }} %</span>
+              <span>{{ placesVendues(seance) }} / {{ seance.salle.capacite }} places</span>
+              <span class="remplissage-seance__detail">
+                {{ seance.remplissage.en_ligne }} en ligne · {{ seance.remplissage.guichet }} au
+                guichet
+              </span>
+              <span v-if="seance.remplissage.en_attente > 0" class="remplissage-seance__detail">
+                {{ seance.remplissage.en_attente }} en cours de paiement
+              </span>
+            </td>
             <td class="tableau__actions">
               <RouterLink
                 v-if="seance.places_vendues === 0"
