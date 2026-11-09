@@ -15,6 +15,16 @@ export interface Tarif {
   prix_centimes: number
 }
 
+/** Remplissage d'une séance (indicateur O4): seules les ventes confirmées comptent dans le taux. */
+export interface RemplissageSeance {
+  en_ligne: number
+  guichet: number
+  /** Places bloquées par une réservation en attente de paiement. */
+  en_attente: number
+  /** Pourcentage arrondi des places vendues par rapport à la capacité de la salle. */
+  taux: number
+}
+
 /** Séance telle que l'API la renvoie au back-office. */
 export interface Seance {
   id: number
@@ -28,6 +38,7 @@ export interface Seance {
   tarifs: (Tarif & { id: number })[]
   /** Places vendues ou bloquées par une réservation en cours. */
   places_vendues: number
+  remplissage: RemplissageSeance
 }
 
 /** Données envoyées à la création et à la modification d'une séance. */

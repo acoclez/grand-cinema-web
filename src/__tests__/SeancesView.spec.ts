@@ -50,7 +50,12 @@ describe('page des séances', () => {
   })
 
   it('liste les séances du jour avec leur horaire, leurs tarifs, leur état et leurs places', async () => {
-    simulerListe([seanceDeTest({ places_vendues: 12 })])
+    simulerListe([
+      seanceDeTest({
+        places_vendues: 13,
+        remplissage: { en_ligne: 10, guichet: 2, en_attente: 1, taux: 7 },
+      }),
+    ])
     const { page } = await monterLeJour()
 
     expect(api.get).toHaveBeenCalledWith('/admin/seances?date=2026-11-20')
@@ -61,7 +66,47 @@ describe('page des séances', () => {
     expect(ligne.text()).toContain('VO')
     expect(ligne.text()).toMatch(/Plein 9,50\s€/)
     expect(ligne.text()).toContain('Publiée')
-    expect(ligne.text()).toContain('12 / 180')
+    const remplissage = ligne.find('.remplissage-seance')
+    expect(remplissage.find('meter').attributes('value')).toBe('7')
+    expect(remplissage.text()).toContain('7 %')
+    expect(remplissage.text()).toContain('12 / 180 places')
+    expect(remplissage.text()).toContain('10 en ligne · 2 au guichet')
+    expect(remplissage.text()).toContain('1 en cours de paiement')
+  })
+
+  it('résume le remplissage des séances publiées du jour', async () => {
+    simulerListe([
+      seanceDeTest({ remplissage: { en_ligne: 50, guichet: 22, en_attente: 0, taux: 40 } }),
+      seanceDeTest({
+        id: 2,
+        salle: { id: 1, nom: 'Salle 1', type: 'premium_imax', capacite: 1000 },
+        remplissage: { en_ligne: 900, guichet: 35, en_attente: 0, taux: 94 },
+      }),
+      seanceDeTest({ id: 3, statut: 'brouillon' }),
+    ])
+    const { page } = await monterLeJour()
+
+    expect(page.find('.bilan-remplissage').text()).toBe(
+      'Remplissage des séances publiées: 85 % (1 007 places vendues sur 1 180).',
+    )
+    expect(page.find('.remplissage-seance').text()).not.toContain('en cours de paiement')
+  })
+
+  it('actualiser relit les chiffres après une vente', async () => {
+    simulerListe(
+      [seanceDeTest()],
+      [seanceDeTest({ remplissage: { en_ligne: 0, guichet: 18, en_attente: 0, taux: 10 } })],
+    )
+    const { page } = await monterLeJour()
+    expect(page.find('.remplissage-seance__taux').text()).toBe('0 %')
+
+    const actualiser = page.findAll('.filtres__jours button').find((b) => b.text() === 'Actualiser')
+    await actualiser?.trigger('click')
+    await flushPromises()
+
+    expect(api.get).toHaveBeenLastCalledWith('/admin/seances?date=2026-11-20')
+    expect(page.find('.remplissage-seance__taux').text()).toBe('10 %')
+    expect(page.find('.bilan-remplissage').text()).toContain('10 %')
   })
 
   it('une séance dont des places sont vendues ne propose plus la modification', async () => {

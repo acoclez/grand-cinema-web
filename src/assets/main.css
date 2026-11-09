@@ -604,3 +604,27 @@ a.bouton {
     min-width: 0;
   }
 }
+
+/* Remplissage des séances (back-office) */
+.bilan-remplissage {
+  margin: 0 0 1rem;
+  font-weight: 600;
+}
+
+.remplissage-seance span {
+  display: block;
+  white-space: nowrap;
+}
+
+.remplissage-seance meter {
+  width: 6rem;
+}
+
+.remplissage-seance__taux {
+  font-weight: 600;
+}
+
+.remplissage-seance__detail {
+  font-size: 0.875rem;
+  color: var(--couleur-texte-doux);
+}
