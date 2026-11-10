@@ -73,6 +73,25 @@ describe('page des séances', () => {
     expect(complet?.find('.horaire__places').exists()).toBe(false)
   })
 
+  it('chaque séance non complète mène à son plan de salle pour choisir ses places', async () => {
+    vi.mocked(api.get).mockResolvedValue({
+      data: [
+        seancePubliqueDeTest({ id: 4 }),
+        seancePubliqueDeTest({ id: 5, places_restantes: 0, complet: true }),
+      ],
+    })
+    const { page } = await monter(SeancesDuJourView, '/seances')
+
+    const [libre, complet] = page.findAll('.horaire')
+    const lien = libre?.find('.horaire__reserver')
+    expect(lien?.text()).toBe('Choisir ses places')
+    expect(lien?.attributes('href')).toBe('/seances/4/places')
+    expect(lien?.attributes('aria-label')).toBe(
+      'Choisir ses places pour Le Souffle du Festival à 20:30, Salle 3',
+    )
+    expect(complet?.find('.horaire__reserver').exists()).toBe(false)
+  })
+
   it('changer de date recharge les séances, sans revenir avant aujourd hui', async () => {
     vi.mocked(api.get).mockResolvedValue({ data: [] })
     const { page } = await monter(SeancesDuJourView, '/seances')

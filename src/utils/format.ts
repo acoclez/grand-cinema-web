@@ -61,6 +61,12 @@ export function centimesDe(saisie: string): number | null {
   return Math.round(Number(texte) * 100)
 }
 
+/** Temps restant lisible: 125 secondes donnent 2:05. */
+export function compteARebours(secondes: number): string {
+  const minutes = Math.floor(secondes / 60)
+  return `${minutes}:${String(secondes % 60).padStart(2, '0')}`
+}
+
 /** Durée lisible d'un film: 112 minutes donne 1H52, 45 minutes donne 45 min. */
 export function dureeLisible(minutes: number): string {
   const heures = Math.floor(minutes / 60)

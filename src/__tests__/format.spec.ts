@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   centimesDe,
+  compteARebours,
   dateDe,
   decalerJour,
   dureeLisible,
@@ -47,5 +48,12 @@ describe('mise en forme des dates et des prix', () => {
     expect(dureeLisible(125)).toBe('2 h 05')
     expect(dureeLisible(120)).toBe('2 h')
     expect(dureeLisible(45)).toBe('45 min')
+  })
+
+  it('écrit le temps restant en minutes et secondes', () => {
+    expect(compteARebours(600)).toBe('10:00')
+    expect(compteARebours(125)).toBe('2:05')
+    expect(compteARebours(9)).toBe('0:09')
+    expect(compteARebours(0)).toBe('0:00')
   })
 })
