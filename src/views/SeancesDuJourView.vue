@@ -113,6 +113,13 @@ onMounted(charger)
                 <span v-if="seance.bientot_complet" class="remplissage remplissage--bientot">
                   Bientôt complet
                 </span>
+                <RouterLink
+                  class="horaire__reserver"
+                  :to="{ name: 'plan-de-salle', params: { id: seance.id } }"
+                  :aria-label="`Choisir ses places pour ${groupe.film.titre} à ${heureDe(seance.debut)}, ${seance.salle.nom}`"
+                >
+                  Choisir ses places
+                </RouterLink>
               </template>
             </li>
           </ul>

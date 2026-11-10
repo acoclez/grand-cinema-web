@@ -628,3 +628,136 @@ a.bouton {
   font-size: 0.875rem;
   color: var(--couleur-texte-doux);
 }
+
+.horaire__reserver {
+  margin-top: 0.25rem;
+  font-weight: 600;
+}
+
+/* Plan de salle (US-08) */
+.plan-seance,
+.plan-libres {
+  color: var(--couleur-texte-doux);
+}
+
+.plan {
+  margin: 1rem 0;
+}
+
+/* Sur un petit écran, seul le plan défile, pas la page. */
+.plan__defilant {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.plan__ecran {
+  max-width: 28rem;
+  margin: 0 auto 1.25rem;
+  padding: 0.25rem;
+  border-bottom: 4px solid var(--couleur-texte-doux);
+  text-align: center;
+  font-size: 0.875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--couleur-texte-doux);
+}
+
+.plan__salle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  width: max-content;
+  min-width: 100%;
+}
+
+.plan__rangee {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.plan__nom-rangee {
+  width: 1.5rem;
+  align-self: center;
+  font-weight: 600;
+  color: var(--couleur-texte-doux);
+}
+
+.place {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 2px solid var(--couleur-bordure);
+  border-radius: 6px 6px 3px 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.place--libre {
+  background: #ffffff;
+  color: var(--couleur-texte);
+}
+
+.place--libre:hover:not(:disabled) {
+  border-color: var(--couleur-accent);
+}
+
+.place--choisie {
+  border-color: var(--couleur-accent-fonce);
+  background: var(--couleur-accent);
+  color: #ffffff;
+}
+
+.place--occupee {
+  border-color: #b9b3ab;
+  background: #b9b3ab;
+  color: #4a463f;
+  cursor: not-allowed;
+}
+
+.place--pmr {
+  border-color: #2f5f9e;
+  border-style: double;
+  border-width: 4px;
+}
+
+.place:disabled:not(.place--occupee) {
+  cursor: default;
+}
+
+.legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+}
+
+.legende li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legende .place {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.selection {
+  margin-top: 1rem;
+}
+
+.selection__resume {
+  margin: 0;
+  font-weight: 600;
+}
+
+.compte-a-rebours strong {
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}

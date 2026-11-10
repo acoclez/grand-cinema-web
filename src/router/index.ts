@@ -92,6 +92,20 @@ export const routes: RouteRecordRaw[] = [
     meta: { titre: 'Séances' },
   },
   {
+    path: '/seances/:id(\\d+)/places',
+    name: 'plan-de-salle',
+    component: () => import('@/views/PlanDeSalleView.vue'),
+    props: (route) => ({ id: Number(route.params.id) }),
+    meta: { titre: 'Choisir ses places' },
+  },
+  {
+    path: '/reservations/:id(\\d+)',
+    name: 'reservation',
+    component: () => import('@/views/ReservationView.vue'),
+    props: (route) => ({ id: Number(route.params.id) }),
+    meta: { titre: 'Votre réservation', connexionRequise: true },
+  },
+  {
     path: '/connexion',
     name: 'connexion',
     component: () => import('@/views/ConnexionView.vue'),

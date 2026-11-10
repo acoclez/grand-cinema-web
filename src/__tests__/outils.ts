@@ -8,6 +8,7 @@ import { CLE_SESSION } from '@/stores/auth'
 import type { ReponseJeton, Utilisateur } from '@/types/compte'
 import type { Film } from '@/types/film'
 import type { ListePaginee } from '@/types/pagination'
+import type { PlaceDuPlan, PlanDeSalle, Reservation } from '@/types/reservation'
 import type { Salle } from '@/types/salle'
 import type { Seance, SeancePublique } from '@/types/seance'
 
@@ -143,4 +144,71 @@ export async function monter(
   const page = mount(composant, { props: proprietes, global: { plugins: [pinia, router] } })
   await flushPromises()
   return { page, router }
+}
+
+/**
+ * Plan d'une petite salle de 6 places pour la séance 1: rangée A (A1 réservée aux personnes à
+ * mobilité réduite, A2 occupée, A3) et rangée B (B1 à B3). Les identifiants sont 11 à 13 et 21 à 23.
+ */
+export function planDeTest(changements: Partial<PlanDeSalle> = {}): PlanDeSalle {
+  const place = (rangee: string, numero: number, details: Partial<PlaceDuPlan> = {}) => ({
+    id: (rangee === 'A' ? 10 : 20) + numero,
+    rangee,
+    numero,
+    pmr: false,
+    libre: true,
+    ...details,
+  })
+  return {
+    seance: {
+      id: 1,
+      film: {
+        id: 1,
+        titre: 'Le Souffle du Festival',
+        duree_minutes: 112,
+        classification: 'Tous publics',
+        affiche_url: null,
+      },
+      salle: { nom: 'Salle 9', type: 'evenementielle', capacite: 6 },
+      debut: '2026-11-12T20:30:00+01:00',
+      fin: '2026-11-12T22:22:00+01:00',
+      langue: 'vo',
+    },
+    reservable: true,
+    places_max: 10,
+    blocage_minutes: 10,
+    places_libres: 5,
+    places: [
+      place('A', 1, { pmr: true }),
+      place('A', 2, { libre: false }),
+      place('A', 3),
+      place('B', 1),
+      place('B', 2),
+      place('B', 3),
+    ],
+    ...changements,
+  }
+}
+
+/** Réservation 7 de Camille, en attente de paiement: places B1 et B2, 10 minutes restantes. */
+export function reservationDeTest(changements: Partial<Reservation> = {}): Reservation {
+  return {
+    id: 7,
+    numero: 'R-7KX4M2PA',
+    statut: 'en_attente',
+    expire_at: '2026-11-12T10:10:00+01:00',
+    secondes_restantes: 600,
+    seance: {
+      id: 1,
+      film: { id: 1, titre: 'Le Souffle du Festival' },
+      salle: { nom: 'Salle 9', type: 'evenementielle' },
+      debut: '2026-11-12T20:30:00+01:00',
+      langue: 'vo',
+    },
+    places: [
+      { id: 21, rangee: 'B', numero: 1, pmr: false },
+      { id: 22, rangee: 'B', numero: 2, pmr: false },
+    ],
+    ...changements,
+  }
 }
