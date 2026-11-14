@@ -1,7 +1,7 @@
 import { flushPromises } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { administrateur, monter, simulerSessionOuverte } from '@/__tests__/outils'
+import { administrateur, agent, monter, simulerSessionOuverte } from '@/__tests__/outils'
 import App from '@/App.vue'
 import { api } from '@/services/api'
 
@@ -47,6 +47,19 @@ describe('en-tête et accueil', () => {
     expect(
       page.findAll('nav[aria-label="Back-office"] a').map((lien) => lien.attributes('href')),
     ).toEqual(['/admin/films', '/admin/seances', '/admin/salles'])
+  })
+
+  it('l agent d accueil et l administrateur voient le lien du guichet', async () => {
+    simulerSessionOuverte()
+    const spectateur = await monter(App)
+    expect(spectateur.page.find('nav[aria-label="Guichet"]').exists()).toBe(false)
+
+    simulerSessionOuverte(agent)
+    const { page } = await monter(App)
+    const lien = page.find('nav[aria-label="Guichet"] a')
+    expect(lien.text()).toBe('Vendre au guichet')
+    expect(lien.attributes('href')).toBe('/seances')
+    expect(page.find('nav[aria-label="Back-office"]').exists()).toBe(false)
   })
 
   it('l accueil salue un compte connecté', async () => {

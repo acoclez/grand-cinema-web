@@ -1,23 +1,11 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { planDeTest, reservationDeTest } from '@/__tests__/outils'
+import { planAvecOccupees, planDeTest, reservationDeTest } from '@/__tests__/outils'
 import { api } from '@/services/api'
 import { useReservationStore } from '@/stores/reservation'
-import type { PlanDeSalle } from '@/types/reservation'
 
 vi.mock('@/services/api', () => import('@/__tests__/apiSimulee'))
-
-/** Le plan de test, avec les places indiquées occupées en plus de A2. */
-function planAvecOccupees(...ids: number[]): PlanDeSalle {
-  const plan = planDeTest()
-  return {
-    ...plan,
-    places: plan.places.map((place) =>
-      ids.includes(place.id) ? { ...place, libre: false } : place,
-    ),
-  }
-}
 
 describe('store reservation', () => {
   beforeEach(() => {

@@ -1,15 +1,24 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import AfficheFilm from '@/components/AfficheFilm.vue'
 import { ErreurApi, MESSAGE_ERREUR_INATTENDUE } from '@/services/api'
+import { useAuthStore } from '@/stores/auth'
 import { useProgrammationStore } from '@/stores/programmation'
+import { PERSONNEL_DU_GUICHET } from '@/types/compte'
 import { LIBELLES_TYPE_SALLE } from '@/types/salle'
 import type { SeancePublique } from '@/types/seance'
 import { decalerJour, dureeLisible, heureDe, jourEnLettres, jourIso } from '@/utils/format'
 
 const programmation = useProgrammationStore()
+const auth = useAuthStore()
+/** Le personnel du guichet ouvre le plan pour vendre au comptoir, un spectateur pour réserver. */
+const vente = computed(() =>
+  auth.aUnDesRoles(PERSONNEL_DU_GUICHET)
+    ? { page: 'guichet', libelle: 'Vendre au guichet' }
+    : { page: 'plan-de-salle', libelle: 'Choisir ses places' },
+)
 const aujourdhui = jourIso()
 const chargement = ref(true)
 const erreur = ref<string | null>(null)
@@ -115,10 +124,10 @@ onMounted(charger)
                 </span>
                 <RouterLink
                   class="horaire__reserver"
-                  :to="{ name: 'plan-de-salle', params: { id: seance.id } }"
-                  :aria-label="`Choisir ses places pour ${groupe.film.titre} à ${heureDe(seance.debut)}, ${seance.salle.nom}`"
+                  :to="{ name: vente.page, params: { id: seance.id } }"
+                  :aria-label="`${vente.libelle} pour ${groupe.film.titre} à ${heureDe(seance.debut)}, ${seance.salle.nom}`"
                 >
-                  Choisir ses places
+                  {{ vente.libelle }}
                 </RouterLink>
               </template>
             </li>

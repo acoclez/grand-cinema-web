@@ -9,7 +9,7 @@ import {
   simulerSessionOuverte,
 } from '@/__tests__/outils'
 import { api, ErreurApi } from '@/services/api'
-import { ACTUALISATION_PLAN_MS } from '@/stores/reservation'
+import { ACTUALISATION_PLAN_MS } from '@/composables/usePlanDeSalle'
 import PlanDeSalleView from '@/views/PlanDeSalleView.vue'
 
 vi.mock('@/services/api', () => import('@/__tests__/apiSimulee'))
@@ -175,14 +175,15 @@ describe('plan de salle', () => {
     expect(page.find('.selection').exists()).toBe(false)
   })
 
-  it('le personnel consulte le plan sans réserver en ligne', async () => {
+  it('le personnel consulte le plan sans réserver en ligne, et peut ouvrir le guichet', async () => {
     simulerSessionOuverte(administrateur)
     vi.mocked(api.get).mockResolvedValue({ data: planDeTest() })
     const { page } = await monterLePlan()
 
-    expect(page.find('.message').text()).toBe(
+    expect(page.find('.message').text()).toContain(
       'La réservation en ligne est réservée aux comptes spectateurs.',
     )
+    expect(page.find('.message a').attributes('href')).toBe('/guichet/seances/1')
     expect(page.find('.selection').exists()).toBe(false)
   })
 

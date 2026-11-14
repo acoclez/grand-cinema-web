@@ -108,7 +108,8 @@ form {
 
 .champ input,
 .champ textarea,
-.champ select {
+.champ select,
+.panier__place select {
   font: inherit;
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--couleur-bordure);
@@ -755,6 +756,38 @@ a.bouton {
 .selection__resume {
   margin: 0;
   font-weight: 600;
+}
+
+/* Vente au guichet (US-16) */
+.panier {
+  margin-top: 1.5rem;
+}
+
+.panier__places {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.panier__place {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.panier__place label {
+  min-width: 6rem;
+  font-weight: 600;
+}
+
+.panier__total {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .compte-a-rebours strong {
