@@ -1,6 +1,9 @@
 /** Rôles d'un compte, identiques à ceux de l'API. */
 export type Role = 'spectateur' | 'agent' | 'administrateur'
 
+/** Le guichet est tenu par les agents d'accueil, et par l'administrateur s'il les remplace. */
+export const PERSONNEL_DU_GUICHET: readonly Role[] = ['agent', 'administrateur']
+
 /** Profil d'un compte, tel que l'API le renvoie. */
 export interface Utilisateur {
   id: number

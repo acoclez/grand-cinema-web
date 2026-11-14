@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 
+import EnTeteSeance from '@/components/EnTeteSeance.vue'
 import PlanDeSalle from '@/components/PlanDeSalle.vue'
+import { usePlanDeSalle } from '@/composables/usePlanDeSalle'
 import { useSessionExpiree } from '@/composables/useSessionExpiree'
 import { ErreurApi, MESSAGE_ERREUR_INATTENDUE } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
-import { ACTUALISATION_PLAN_MS, useReservationStore } from '@/stores/reservation'
-import { libellePlace, type PlaceDuPlan } from '@/types/reservation'
-import { LIBELLES_TYPE_SALLE } from '@/types/salle'
-import { dateDe, heureDe, jourEnLettres } from '@/utils/format'
+import { useReservationStore } from '@/stores/reservation'
+import { libellePlace, placesLibres, type PlaceDuPlan } from '@/types/reservation'
 
 /** Plan de salle d'une séance: le spectateur choisit ses places et les bloque (US-08). */
 const props = defineProps<{ id: number }>()
@@ -20,23 +20,18 @@ const route = useRoute()
 const router = useRouter()
 const { rediriger } = useSessionExpiree()
 
-const chargement = ref(true)
 const envoi = ref(false)
-const erreur = ref<string | null>(null)
-/** Annonce lue par les lecteurs d'écran: place prise entre-temps, limite atteinte. */
-const annonce = ref<string | null>(null)
-let actualisation: ReturnType<typeof setInterval> | undefined
+const { chargement, erreur, annonce } = usePlanDeSalle(
+  () => reservation.chargerPlan(props.id),
+  () => {
+    reservation.plan = null
+  },
+)
 
 const plan = computed(() => reservation.plan)
 /** Un visiteur peut choisir ses places, puis se connecter. Le personnel ne réserve pas en ligne. */
 const peutReserver = computed(() => !auth.estConnecte || auth.aUnDesRoles(['spectateur']))
 const consultationSeule = computed(() => !plan.value?.reservable || !peutReserver.value)
-
-const placesLibres = computed(() => {
-  const libres = plan.value?.places_libres ?? 0
-  const capacite = plan.value?.seance.salle.capacite ?? 0
-  return libres === 1 ? `1 place libre sur ${capacite}` : `${libres} places libres sur ${capacite}`
-})
 
 const resumeSelection = computed(() => {
   const choisies = reservation.placesChoisies
@@ -48,37 +43,6 @@ const resumeSelection = computed(() => {
     ? `1 place choisie: ${libelles}`
     : `${choisies.length} places choisies: ${libelles}`
 })
-
-function annoncerPrises(prises: PlaceDuPlan[]): void {
-  if (prises.length === 1) {
-    annonce.value = `La place ${libellePlace(prises[0]!)} vient d’être prise: choisissez-en une autre.`
-  } else if (prises.length > 1) {
-    annonce.value = `Les places ${prises.map(libellePlace).join(', ')} viennent d’être prises: choisissez-en d’autres.`
-  }
-}
-
-async function actualiser(): Promise<void> {
-  try {
-    annoncerPrises(await reservation.chargerPlan(props.id))
-  } catch {
-    // Une relecture manquée n'efface pas le plan affiché: la suivante le remettra à jour.
-  }
-}
-
-async function chargerPremiereFois(): Promise<void> {
-  try {
-    annoncerPrises(await reservation.chargerPlan(props.id))
-  } catch (e) {
-    reservation.plan = null
-    if (e instanceof ErreurApi && e.statut === 404) {
-      erreur.value = 'Cette séance n’est pas proposée à la réservation.'
-    } else {
-      erreur.value = e instanceof ErreurApi ? e.message : MESSAGE_ERREUR_INATTENDUE
-    }
-  } finally {
-    chargement.value = false
-  }
-}
 
 function basculer(place: PlaceDuPlan): void {
   annonce.value = null
@@ -115,13 +79,6 @@ async function reserver(): Promise<void> {
     envoi.value = false
   }
 }
-
-onMounted(async () => {
-  await chargerPremiereFois()
-  actualisation = setInterval(actualiser, ACTUALISATION_PLAN_MS)
-})
-
-onBeforeUnmount(() => clearInterval(actualisation))
 </script>
 
 <template>
@@ -130,24 +87,22 @@ onBeforeUnmount(() => clearInterval(actualisation))
 
     <p v-if="chargement" role="status">Chargement du plan de salle…</p>
     <template v-else-if="plan">
-      <h1>{{ plan.seance.film.titre }}</h1>
-      <p class="plan-seance">
-        {{ jourEnLettres(dateDe(plan.seance.debut)) }} à {{ heureDe(plan.seance.debut) }} ·
-        {{ plan.seance.salle.nom }} · {{ LIBELLES_TYPE_SALLE[plan.seance.salle.type] }} ·
-        {{ plan.seance.langue.toUpperCase() }}
-      </p>
+      <EnTeteSeance :seance="plan.seance" />
 
       <p v-if="!plan.reservable" class="message message--erreur">
         Cette séance a commencé: ses places ne se réservent plus.
       </p>
       <p v-else-if="!peutReserver" class="message">
         La réservation en ligne est réservée aux comptes spectateurs.
+        <RouterLink :to="{ name: 'guichet', params: { id: plan.seance.id } }">
+          Vendre des places au guichet
+        </RouterLink>
       </p>
       <p v-else class="plan-consigne">
         Choisissez jusqu’à {{ plan.places_max }} places. Elles seront bloquées pour vous pendant
         {{ plan.blocage_minutes }} minutes, le temps de payer.
       </p>
-      <p class="plan-libres">{{ placesLibres }}</p>
+      <p class="plan-libres">{{ placesLibres(plan) }}</p>
 
       <PlanDeSalle
         :places="plan.places"

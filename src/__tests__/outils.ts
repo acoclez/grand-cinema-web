@@ -32,6 +32,16 @@ export const administrateur: Utilisateur = {
   consentement_emails: false,
 }
 
+export const agent: Utilisateur = {
+  id: 3,
+  prenom: 'Sam',
+  nom: 'Leroy',
+  email: 'agent@grand-cinema.fr',
+  role: 'agent',
+  pays_residence: 'FR',
+  consentement_emails: false,
+}
+
 /** Film à l'affiche, à compléter ou modifier selon le test. */
 export function filmDeTest(changements: Partial<Film> = {}): Film {
   return {
@@ -149,6 +159,7 @@ export async function monter(
 /**
  * Plan d'une petite salle de 6 places pour la séance 1: rangée A (A1 réservée aux personnes à
  * mobilité réduite, A2 occupée, A3) et rangée B (B1 à B3). Les identifiants sont 11 à 13 et 21 à 23.
+ * Deux tarifs: Plein (5, 9,50 €) et Réduit (6, 7,00 €).
  */
 export function planDeTest(changements: Partial<PlanDeSalle> = {}): PlanDeSalle {
   const place = (rangee: string, numero: number, details: Partial<PlaceDuPlan> = {}) => ({
@@ -178,6 +189,10 @@ export function planDeTest(changements: Partial<PlanDeSalle> = {}): PlanDeSalle 
     places_max: 10,
     blocage_minutes: 10,
     places_libres: 5,
+    tarifs: [
+      { id: 5, libelle: 'Plein', prix_centimes: 950 },
+      { id: 6, libelle: 'Réduit', prix_centimes: 700 },
+    ],
     places: [
       place('A', 1, { pmr: true }),
       place('A', 2, { libre: false }),
@@ -190,12 +205,26 @@ export function planDeTest(changements: Partial<PlanDeSalle> = {}): PlanDeSalle 
   }
 }
 
+/** Le plan de test, avec les places indiquées occupées en plus de A2. */
+export function planAvecOccupees(...ids: number[]): PlanDeSalle {
+  const plan = planDeTest()
+  return {
+    ...plan,
+    places_libres: plan.places_libres - ids.length,
+    places: plan.places.map((place) =>
+      ids.includes(place.id) ? { ...place, libre: false } : place,
+    ),
+  }
+}
+
 /** Réservation 7 de Camille, en attente de paiement: places B1 et B2, 10 minutes restantes. */
 export function reservationDeTest(changements: Partial<Reservation> = {}): Reservation {
   return {
     id: 7,
     numero: 'R-7KX4M2PA',
     statut: 'en_attente',
+    canal: 'en_ligne',
+    montant_centimes: 0,
     expire_at: '2026-11-12T10:10:00+01:00',
     secondes_restantes: 600,
     seance: {
@@ -206,8 +235,8 @@ export function reservationDeTest(changements: Partial<Reservation> = {}): Reser
       langue: 'vo',
     },
     places: [
-      { id: 21, rangee: 'B', numero: 1, pmr: false },
-      { id: 22, rangee: 'B', numero: 2, pmr: false },
+      { id: 21, rangee: 'B', numero: 1, pmr: false, tarif: null, prix_centimes: 0 },
+      { id: 22, rangee: 'B', numero: 2, pmr: false, tarif: null, prix_centimes: 0 },
     ],
     ...changements,
   }

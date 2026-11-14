@@ -2,6 +2,7 @@
 import { RouterLink, RouterView, useRouter } from 'vue-router'
 
 import { useAuthStore } from '@/stores/auth'
+import { PERSONNEL_DU_GUICHET } from '@/types/compte'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -18,6 +19,9 @@ async function seDeconnecter() {
     <nav aria-label="Programmation">
       <RouterLink :to="{ name: 'films' }">Films à l'affiche</RouterLink>
       <RouterLink :to="{ name: 'seances' }">Séances</RouterLink>
+    </nav>
+    <nav v-if="auth.aUnDesRoles(PERSONNEL_DU_GUICHET)" aria-label="Guichet">
+      <RouterLink :to="{ name: 'seances' }">Vendre au guichet</RouterLink>
     </nav>
     <nav v-if="auth.aUnDesRoles(['administrateur'])" aria-label="Back-office">
       <RouterLink :to="{ name: 'admin-films' }">Films</RouterLink>

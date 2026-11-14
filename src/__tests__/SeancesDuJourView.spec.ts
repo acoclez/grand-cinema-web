@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { monter, seancePubliqueDeTest } from '@/__tests__/outils'
+import { agent, monter, seancePubliqueDeTest, simulerSessionOuverte } from '@/__tests__/outils'
 import { api, ErreurApi, MESSAGE_SERVEUR_INJOIGNABLE } from '@/services/api'
 import SeancesDuJourView from '@/views/SeancesDuJourView.vue'
 
@@ -90,6 +90,19 @@ describe('page des séances', () => {
       'Choisir ses places pour Le Souffle du Festival à 20:30, Salle 3',
     )
     expect(complet?.find('.horaire__reserver').exists()).toBe(false)
+  })
+
+  it('au guichet, chaque séance non complète mène à la vente au guichet', async () => {
+    simulerSessionOuverte(agent)
+    vi.mocked(api.get).mockResolvedValue({ data: [seancePubliqueDeTest({ id: 4 })] })
+    const { page } = await monter(SeancesDuJourView, '/seances')
+
+    const lien = page.find('.horaire__reserver')
+    expect(lien.text()).toBe('Vendre au guichet')
+    expect(lien.attributes('href')).toBe('/guichet/seances/4')
+    expect(lien.attributes('aria-label')).toBe(
+      'Vendre au guichet pour Le Souffle du Festival à 20:30, Salle 3',
+    )
   })
 
   it('changer de date recharge les séances, sans revenir avant aujourd hui', async () => {

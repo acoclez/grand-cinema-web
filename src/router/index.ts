@@ -8,7 +8,7 @@ import {
 } from 'vue-router'
 
 import { useAuthStore } from '@/stores/auth'
-import type { Role } from '@/types/compte'
+import { PERSONNEL_DU_GUICHET, type Role } from '@/types/compte'
 import AccueilView from '@/views/AccueilView.vue'
 
 declare module 'vue-router' {
@@ -18,7 +18,7 @@ declare module 'vue-router' {
     /** Page réservée aux comptes connectés. */
     connexionRequise?: boolean
     /** Page réservée à certains rôles (back-office). */
-    roles?: Role[]
+    roles?: readonly Role[]
     /** Page inutile une fois connecté (connexion, inscription). */
     visiteurSeulement?: boolean
   }
@@ -104,6 +104,13 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/views/ReservationView.vue'),
     props: (route) => ({ id: Number(route.params.id) }),
     meta: { titre: 'Votre réservation', connexionRequise: true },
+  },
+  {
+    path: '/guichet/seances/:id(\\d+)',
+    name: 'guichet',
+    component: () => import('@/views/GuichetView.vue'),
+    props: (route) => ({ id: Number(route.params.id) }),
+    meta: { titre: 'Vente au guichet', roles: PERSONNEL_DU_GUICHET },
   },
   {
     path: '/connexion',

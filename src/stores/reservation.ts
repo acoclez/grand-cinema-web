@@ -2,11 +2,9 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 import { api } from '@/services/api'
+import { lirePlan, separerLesPlacesPrises } from '@/services/planDeSalle'
 import type { Element } from '@/types/pagination'
 import type { PlaceDuPlan, PlanDeSalle, Reservation } from '@/types/reservation'
-
-/** Le plan est relu toutes les 5 secondes, pour voir les places prises par les autres. */
-export const ACTUALISATION_PLAN_MS = 5000
 
 /**
  * Réservation en ligne (US-08): le plan de salle d'une séance, les places choisies,
@@ -33,11 +31,9 @@ export const useReservationStore = defineStore('reservation', () => {
       selection.value = []
       seanceDeLaSelection.value = seanceId
     }
-    plan.value = (await api.get<Element<PlanDeSalle>>(`/seances/${seanceId}/plan`)).data
-    const prises = plan.value.places.filter(
-      (place) => !place.libre && selection.value.includes(place.id),
-    )
-    selection.value = selection.value.filter((id) => !prises.some((place) => place.id === id))
+    plan.value = await lirePlan(seanceId)
+    const { prises, restantes } = separerLesPlacesPrises(plan.value, selection.value)
+    selection.value = restantes
     return prises
   }
 
