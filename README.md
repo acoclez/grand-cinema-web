@@ -47,3 +47,20 @@ Prérequis : Node 24 ou plus récent, et l'API lancée sur l'adresse indiquée d
 | `npm run test:unit -- --coverage` | Tests avec rapport de couverture |
 | `npm run lint` | Vérification du code (oxlint puis ESLint) |
 | `npm run format` | Mise en forme avec Prettier |
+
+## Déploiement (Clever Cloud)
+
+L'environnement de démonstration de l'examen est une préproduction minimale, déployée depuis `develop` sur une application statique Clever Cloud de taille pico. L'application Clever Cloud suit la branche `develop` du dépôt GitHub: chaque fusion d'une merge request la redéploie, après l'intégration continue au vert exigée par la protection de la branche.
+
+Fichiers lus par Clever Cloud:
+
+- `mise.toml`: la version de Node utilisée pour construire l'application.
+- `Caddyfile`: Caddy sert le dossier `dist` et renvoie `index.html` pour toute adresse qui n'est pas un fichier, pour que les pages de Vue Router s'ouvrent aussi depuis un lien ou après un rafraîchissement.
+
+Variables d'environnement de l'application statique:
+
+| Variable | Valeur |
+|---|---|
+| `CC_BUILD_COMMAND` | `npm ci && npm run build-only` (les types sont déjà vérifiés par l'intégration continue) |
+| `CC_WEBROOT` | `/dist` |
+| `VITE_API_URL` | Adresse de l'API suivie de `/api`, par exemple `https://grand-cinema-api.cleverapps.io/api`, lue au moment de la construction |
