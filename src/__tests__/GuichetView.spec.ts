@@ -8,17 +8,13 @@ import {
   planDeTest,
   reservationDeTest,
   simulerSessionOuverte,
+  texte,
 } from '@/__tests__/outils'
 import { ACTUALISATION_PLAN_MS } from '@/composables/usePlanDeSalle'
 import { api, ErreurApi } from '@/services/api'
 import GuichetView from '@/views/GuichetView.vue'
 
 vi.mock('@/services/api', () => import('@/__tests__/apiSimulee'))
-
-/** Texte d'un élément, espaces insécables remplacées: Intl en met une avant « € ». */
-function texte(element: { text: () => string } | undefined): string {
-  return (element?.text() ?? '').replace(/[  ]/g, ' ')
-}
 
 async function monterLeGuichet() {
   return monter(GuichetView, '/guichet/seances/1', { id: 1 })

@@ -239,7 +239,8 @@ onBeforeUnmount(() => clearInterval(minuterie))
         </div>
       </template>
       <p v-else-if="reservation.statut === 'confirmee'" class="message message--succes">
-        Votre réservation est confirmée.
+        Votre réservation est confirmée. Vos billets vous sont envoyés par e-mail et vous les
+        retrouvez dans <RouterLink :to="{ name: 'mes-billets' }">Mes billets</RouterLink>.
       </p>
       <template v-else>
         <p class="message reservation__fin" role="status">{{ messageDeFin }}</p>

@@ -138,6 +138,12 @@ export const routes: RouteRecordRaw[] = [
     meta: { titre: 'Nouveau mot de passe' },
   },
   {
+    path: '/mes-billets',
+    name: 'mes-billets',
+    component: () => import('@/views/MesBilletsView.vue'),
+    meta: { titre: 'Mes billets', roles: ['spectateur'] },
+  },
+  {
     path: '/mon-compte',
     name: 'mon-compte',
     component: () => import('@/views/MonCompteView.vue'),

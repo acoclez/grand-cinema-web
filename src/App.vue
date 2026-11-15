@@ -30,6 +30,9 @@ async function seDeconnecter() {
     </nav>
     <nav aria-label="Compte">
       <template v-if="auth.estConnecte">
+        <RouterLink v-if="auth.aUnDesRoles(['spectateur'])" :to="{ name: 'mes-billets' }">
+          Mes billets
+        </RouterLink>
         <RouterLink :to="{ name: 'mon-compte' }">Mon espace</RouterLink>
         <button type="button" class="bouton-lien" @click="seDeconnecter">Se déconnecter</button>
       </template>

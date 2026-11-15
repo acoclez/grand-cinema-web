@@ -5,6 +5,7 @@ import { createMemoryHistory } from 'vue-router'
 
 import { creerRouteur } from '@/router'
 import { CLE_SESSION } from '@/stores/auth'
+import type { Billet } from '@/types/billet'
 import type { ReponseJeton, Utilisateur } from '@/types/compte'
 import type { Film } from '@/types/film'
 import type { ListePaginee } from '@/types/pagination'
@@ -120,6 +121,27 @@ export function seancePubliqueDeTest(changements: Partial<SeancePublique> = {}):
     places_restantes: 180,
     bientot_complet: false,
     complet: false,
+    ...changements,
+  }
+}
+
+/** Billet de la place B1, tarif Plein, réservation R-7KX4M2PA du 12 novembre 2026 à 20 h 30. */
+export function billetDeTest(changements: Partial<Billet> = {}): Billet {
+  return {
+    id: 31,
+    reservation: { id: 7, numero: 'R-7KX4M2PA' },
+    seance: {
+      id: 1,
+      film: { id: 1, titre: 'Le Souffle du Festival' },
+      salle: { nom: 'Salle 9' },
+      debut: '2026-11-12T20:30:00+01:00',
+      langue: 'vo',
+    },
+    place: { rangee: 'B', numero: 1, pmr: false },
+    tarif: 'Plein',
+    prix_centimes: 950,
+    utilise_at: null,
+    qr_code: 'data:image/svg+xml;base64,PHN2Zy8+',
     ...changements,
   }
 }
@@ -248,4 +270,9 @@ export function reservationDeTest(changements: Partial<Reservation> = {}): Reser
     ],
     ...changements,
   }
+}
+
+/** Texte d'un élément, espaces insécables remplacées: Intl en met une avant « € ». */
+export function texte(element: { text: () => string } | undefined): string {
+  return (element?.text() ?? '').replace(/[  ]/g, ' ')
 }
