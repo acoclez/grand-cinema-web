@@ -42,6 +42,15 @@ export type StatutReservation = 'en_attente' | 'confirmee' | 'annulee' | 'expire
 
 export type CanalVente = 'en_ligne' | 'guichet'
 
+/** Statut du dernier paiement en ligne d'une réservation (US-09). */
+export type StatutPaiement = 'en_attente' | 'accepte' | 'refuse' | 'rembourse'
+
+/** Place et tarif choisi, envoyés au guichet comme au paiement en ligne. */
+export interface BilletChoisi {
+  place_id: number
+  tarif_id: number
+}
+
 /** Place d'une réservation, avec son tarif et son prix une fois le tarif choisi. */
 export interface PlaceReservee extends Omit<PlaceDuPlan, 'libre'> {
   tarif: string | null
@@ -61,12 +70,16 @@ export interface Reservation {
   expire_at: string | null
   /** Calculées par l'API, pour ne pas dépendre de l'horloge de l'appareil. */
   secondes_restantes: number
+  /** Statut du dernier paiement en ligne, null avant le paiement et pour une vente au guichet. */
+  paiement: StatutPaiement | null
   seance: {
     id: number
     film: { id: number; titre: string }
     salle: { nom: string; type: TypeSalle }
     debut: string
     langue: LangueSeance
+    /** Tarifs à choisir pour chaque place avant de payer. */
+    tarifs: TarifDuPlan[]
   }
   places: PlaceReservee[]
 }
@@ -74,6 +87,18 @@ export interface Reservation {
 /** Libellé d'une place: rangée et numéro, par exemple B7. */
 export function libellePlace(place: Pick<PlaceDuPlan, 'rangee' | 'numero'>): string {
   return `${place.rangee}${place.numero}`
+}
+
+/** Montant à payer: le prix du tarif choisi pour chaque place. */
+export function montantDesTarifs(
+  placeIds: number[],
+  tarifs: TarifDuPlan[],
+  choix: Record<number, number>,
+): number {
+  return placeIds.reduce(
+    (somme, id) => somme + (tarifs.find((tarif) => tarif.id === choix[id])?.prix_centimes ?? 0),
+    0,
+  )
 }
 
 /** Places libres du plan, par exemple « 5 places libres sur 6 ». */

@@ -4,7 +4,13 @@ import { computed, ref } from 'vue'
 import { api } from '@/services/api'
 import { lirePlan, separerLesPlacesPrises } from '@/services/planDeSalle'
 import type { Element } from '@/types/pagination'
-import type { PlaceDuPlan, PlanDeSalle, Reservation } from '@/types/reservation'
+import {
+  montantDesTarifs,
+  type BilletChoisi,
+  type PlaceDuPlan,
+  type PlanDeSalle,
+  type Reservation,
+} from '@/types/reservation'
 
 /**
  * Vente au guichet (US-16): le plan de salle de la séance, le même que sur le site, les places
@@ -24,15 +30,13 @@ export const useGuichetStore = defineStore('guichet', () => {
     () => plan.value?.places.filter((place) => selection.value.includes(place.id)) ?? [],
   )
 
-  /** Prix du tarif choisi pour une place de la vente. */
-  function prixDe(place: PlaceDuPlan): number {
-    const tarif = plan.value?.tarifs.find((candidat) => candidat.id === tarifs.value[place.id])
-    return tarif?.prix_centimes ?? 0
-  }
-
   /** Montant à encaisser: le prix du tarif choisi pour chaque place. */
   const total = computed(() =>
-    placesChoisies.value.reduce((somme, place) => somme + prixDe(place), 0),
+    montantDesTarifs(
+      placesChoisies.value.map((place) => place.id),
+      plan.value?.tarifs ?? [],
+      tarifs.value,
+    ),
   )
 
   /**
@@ -69,9 +73,9 @@ export const useGuichetStore = defineStore('guichet', () => {
   /** Encaisse la vente: les places sont aussitôt vendues, sur le site comme au guichet. */
   async function vendre(seanceId: number): Promise<Reservation> {
     const reponse = await api.post<Element<Reservation>>(`/guichet/seances/${seanceId}/ventes`, {
-      billets: placesChoisies.value.map((place) => ({
+      billets: placesChoisies.value.map((place): BilletChoisi => ({
         place_id: place.id,
-        tarif_id: tarifs.value[place.id],
+        tarif_id: tarifs.value[place.id] ?? 0,
       })),
     })
     derniereVente.value = reponse.data

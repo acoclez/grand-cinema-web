@@ -217,7 +217,10 @@ export function planAvecOccupees(...ids: number[]): PlanDeSalle {
   }
 }
 
-/** Réservation 7 de Camille, en attente de paiement: places B1 et B2, 10 minutes restantes. */
+/**
+ * Réservation 7 de Camille, en attente de paiement: places B1 et B2, 10 minutes restantes.
+ * Tarifs de la séance: Plein (5, 9,50 €) et Réduit (6, 7,00 €).
+ */
 export function reservationDeTest(changements: Partial<Reservation> = {}): Reservation {
   return {
     id: 7,
@@ -227,12 +230,17 @@ export function reservationDeTest(changements: Partial<Reservation> = {}): Reser
     montant_centimes: 0,
     expire_at: '2026-11-12T10:10:00+01:00',
     secondes_restantes: 600,
+    paiement: null,
     seance: {
       id: 1,
       film: { id: 1, titre: 'Le Souffle du Festival' },
       salle: { nom: 'Salle 9', type: 'evenementielle' },
       debut: '2026-11-12T20:30:00+01:00',
       langue: 'vo',
+      tarifs: [
+        { id: 5, libelle: 'Plein', prix_centimes: 950 },
+        { id: 6, libelle: 'Réduit', prix_centimes: 700 },
+      ],
     },
     places: [
       { id: 21, rangee: 'B', numero: 1, pmr: false, tarif: null, prix_centimes: 0 },
