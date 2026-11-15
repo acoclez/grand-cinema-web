@@ -62,6 +62,20 @@ describe('en-tête et accueil', () => {
     expect(page.find('nav[aria-label="Back-office"]').exists()).toBe(false)
   })
 
+  it('seul le spectateur voit le lien vers ses billets', async () => {
+    simulerSessionOuverte()
+    const spectateur = await monter(App)
+    const liens = spectateur.page.findAll('nav[aria-label="Compte"] a')
+    expect(liens.map((lien) => lien.text())).toEqual(['Mes billets', 'Mon espace'])
+    expect(liens[0]?.attributes('href')).toBe('/mes-billets')
+
+    simulerSessionOuverte(agent)
+    const { page } = await monter(App)
+    expect(page.findAll('nav[aria-label="Compte"] a').map((lien) => lien.text())).toEqual([
+      'Mon espace',
+    ])
+  })
+
   it('l accueil salue un compte connecté', async () => {
     simulerSessionOuverte()
     const { page } = await monter(App)

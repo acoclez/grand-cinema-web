@@ -21,4 +21,5 @@ export const api = {
   post: vi.fn<typeof original.api.post>(),
   put: vi.fn<typeof original.api.put>(),
   delete: vi.fn<typeof original.api.delete>(),
+  telecharger: vi.fn<typeof original.api.telecharger>(),
 }

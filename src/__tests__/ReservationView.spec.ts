@@ -1,18 +1,13 @@
 import { flushPromises } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { monter, reservationDeTest, simulerSessionOuverte } from '@/__tests__/outils'
+import { monter, reservationDeTest, simulerSessionOuverte, texte } from '@/__tests__/outils'
 import { api, ErreurApi } from '@/services/api'
 import { ouvrirPageExterne } from '@/services/navigation'
 import ReservationView from '@/views/ReservationView.vue'
 
 vi.mock('@/services/api', () => import('@/__tests__/apiSimulee'))
 vi.mock('@/services/navigation', () => ({ ouvrirPageExterne: vi.fn<(url: string) => void>() }))
-
-/** Texte d'un élément, espaces insécables remplacées: Intl en met une avant « € ». */
-function texte(element: { text: () => string }): string {
-  return element.text().replace(/[  ]/g, ' ')
-}
 
 async function monterLaReservation(retour = '') {
   return monter(ReservationView, `/reservations/7${retour}`, { id: 7 })
@@ -118,7 +113,7 @@ describe('réservation en cours', () => {
     })
     const { page } = await monterLaReservation()
 
-    expect(page.find('.message--succes').text()).toBe('Votre réservation est confirmée.')
+    expect(page.find('.message--succes').text()).toContain('Votre réservation est confirmée.')
     expect(page.find('.actions').exists()).toBe(false)
   })
 
@@ -157,7 +152,11 @@ describe('réservation en cours', () => {
 
     expect(api.post).toHaveBeenCalledWith('/reservations/7/paiement/verification')
     expect(api.get).not.toHaveBeenCalled()
-    expect(page.find('.message--succes').text()).toBe('Votre réservation est confirmée.')
+    const confirmation = page.find('.message--succes')
+    expect(texte(confirmation)).toBe(
+      'Votre réservation est confirmée. Vos billets vous sont envoyés par e-mail et vous les retrouvez dans Mes billets.',
+    )
+    expect(confirmation.find('a').attributes('href')).toBe('/mes-billets')
     expect(texte(page.find('.reservation__tarifs'))).toBe('B1 Plein 9,50 €, B2 Réduit 7,00 €')
     expect(texte(page.find('.reservation__montant'))).toBe('16,50 €')
     expect(page.find('.panier').exists()).toBe(false)
@@ -176,7 +175,7 @@ describe('réservation en cours', () => {
     await flushPromises()
 
     expect(api.post).toHaveBeenCalledTimes(2)
-    expect(page.find('.message--succes').text()).toBe('Votre réservation est confirmée.')
+    expect(page.find('.message--succes').text()).toContain('Votre réservation est confirmée.')
   })
 
   it('après un paiement abandonné, les places restent bloquées avec les tarifs déjà choisis', async () => {

@@ -1,8 +1,8 @@
 /**
  * Appels à l'API du Grand Cinéma.
  *
- * Chaque requête envoie et reçoit du JSON. Le jeton du compte connecté est ajouté
- * automatiquement. Une réponse en erreur devient une ErreurApi, qui porte le message
+ * Chaque requête envoie et reçoit du JSON, sauf le téléchargement d'un fichier (billet PDF).
+ * Le jeton du compte connecté est ajouté automatiquement. Une réponse en erreur devient une ErreurApi, qui porte le message
  * et les erreurs par champ renvoyés par l'API.
  */
 
@@ -55,11 +55,12 @@ function lireErreurs(donnees: unknown): ErreursDeChamps {
   return {}
 }
 
-async function requete<T>(
+/** Envoie la requête et renvoie la réponse si elle réussit, sinon lève une ErreurApi. */
+async function envoyer(
   methode: 'GET' | 'POST' | 'PUT' | 'DELETE',
   chemin: string,
   corps?: unknown,
-): Promise<T> {
+): Promise<Response> {
   const entetes: Record<string, string> = { Accept: 'application/json' }
   const options: RequestInit = { method: methode, headers: entetes }
   if (corps !== undefined) {
@@ -78,13 +79,8 @@ async function requete<T>(
     throw new ErreurApi(MESSAGE_SERVEUR_INJOIGNABLE, 0)
   }
 
-  if (reponse.status === 204) {
-    return undefined as T
-  }
-
-  const donnees: unknown = await reponse.json().catch(() => null)
-
   if (!reponse.ok) {
+    const donnees: unknown = await reponse.json().catch(() => null)
     if (reponse.status === 401 && jeton) {
       authentification.jetonRefuse()
     }
@@ -93,7 +89,24 @@ async function requete<T>(
     throw new ErreurApi(message ?? MESSAGE_ERREUR_INATTENDUE, reponse.status, lireErreurs(donnees))
   }
 
-  return donnees as T
+  return reponse
+}
+
+async function requete<T>(
+  methode: 'GET' | 'POST' | 'PUT' | 'DELETE',
+  chemin: string,
+  corps?: unknown,
+): Promise<T> {
+  const reponse = await envoyer(methode, chemin, corps)
+  if (reponse.status === 204) {
+    return undefined as T
+  }
+  return (await reponse.json().catch(() => null)) as T
+}
+
+/** Télécharge un fichier, par exemple un billet PDF. */
+async function telecharger(chemin: string): Promise<Blob> {
+  return (await envoyer('GET', chemin)).blob()
 }
 
 export const api = {
@@ -101,4 +114,5 @@ export const api = {
   post: <T>(chemin: string, corps?: unknown) => requete<T>('POST', chemin, corps),
   put: <T>(chemin: string, corps: unknown) => requete<T>('PUT', chemin, corps),
   delete: <T>(chemin: string, corps?: unknown) => requete<T>('DELETE', chemin, corps),
+  telecharger,
 }

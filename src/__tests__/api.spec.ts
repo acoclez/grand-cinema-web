@@ -84,6 +84,30 @@ describe('service api', () => {
     expect(options.body).toBeUndefined()
   })
 
+  it('télécharge un fichier avec le jeton du compte connecté', async () => {
+    brancherAuthentification({ jeton: () => 'jeton-abc', jetonRefuse: vi.fn<() => void>() })
+    fetchSimule.mockResolvedValue(
+      new Response('%PDF-1.7', { status: 200, headers: { 'Content-Type': 'application/pdf' } }),
+    )
+
+    const fichier = await api.telecharger('/billets/31/pdf')
+
+    expect(fichier.type).toBe('application/pdf')
+    expect(await fichier.text()).toBe('%PDF-1.7')
+    const { url, options, entetes } = derniereRequete()
+    expect(url).toMatch(/\/billets\/31\/pdf$/)
+    expect(options.method).toBe('GET')
+    expect(entetes.Authorization).toBe('Bearer jeton-abc')
+  })
+
+  it('un téléchargement refusé lève l erreur de l API', async () => {
+    fetchSimule.mockResolvedValue(reponseJson(404, { message: 'Introuvable.' }))
+
+    await expect(api.telecharger('/billets/99/pdf')).rejects.toEqual(
+      new ErreurApi('Introuvable.', 404),
+    )
+  })
+
   it('renvoie undefined pour une réponse sans contenu', async () => {
     fetchSimule.mockResolvedValue(new Response(null, { status: 204 }))
 
