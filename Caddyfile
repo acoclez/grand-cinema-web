@@ -1,0 +1,14 @@
+# Application web servie par Caddy sur Clever Cloud (application statique).
+# Les adresses des pages, par exemple /seances/12/places, ne sont pas des fichiers:
+# elles renvoient index.html, puis Vue Router affiche la bonne page.
+:{$PORT} {
+	root * dist
+	encode zstd gzip
+
+	# Fichiers produits par Vite: leur nom change à chaque version, ils se gardent en cache.
+	@assets path /assets/*
+	header @assets Cache-Control "public, max-age=31536000, immutable"
+
+	try_files {path} /index.html
+	file_server
+}

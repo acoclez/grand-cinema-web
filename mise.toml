@@ -1,0 +1,3 @@
+# Version de Node utilisée par Clever Cloud pour construire l'application.
+[tools]
+node = "24"
