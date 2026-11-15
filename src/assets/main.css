@@ -790,6 +790,17 @@ a.bouton {
   font-variant-numeric: tabular-nums;
 }
 
+/* Paiement en ligne (US-09) */
+.paiement__securite {
+  margin: 1rem 0 0;
+  color: var(--couleur-texte-doux);
+  font-size: 0.9rem;
+}
+
+.paiement__retour .bouton-lien {
+  margin-left: 0.25rem;
+}
+
 .compte-a-rebours strong {
   font-size: 1.25rem;
   font-variant-numeric: tabular-nums;

@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
+import ChoixDesTarifs from '@/components/ChoixDesTarifs.vue'
 import EnTeteSeance from '@/components/EnTeteSeance.vue'
 import PlanDeSalle from '@/components/PlanDeSalle.vue'
 import { usePlanDeSalle } from '@/composables/usePlanDeSalle'
@@ -103,16 +104,12 @@ async function encaisser(): Promise<void> {
         <p v-if="guichet.placesChoisies.length === 0" class="selection__resume">
           Aucune place choisie.
         </p>
-        <ul v-else class="panier__places">
-          <li v-for="place in guichet.placesChoisies" :key="place.id" class="panier__place">
-            <label :for="`tarif-${place.id}`">Place {{ libellePlace(place) }}</label>
-            <select :id="`tarif-${place.id}`" v-model.number="guichet.tarifs[place.id]">
-              <option v-for="tarif in plan.tarifs" :key="tarif.id" :value="tarif.id">
-                {{ tarif.libelle }} · {{ prixEnEuros(tarif.prix_centimes) }}
-              </option>
-            </select>
-          </li>
-        </ul>
+        <ChoixDesTarifs
+          v-else
+          v-model="guichet.tarifs"
+          :places="guichet.placesChoisies"
+          :tarifs="plan.tarifs"
+        />
         <div class="actions">
           <p class="panier__total">Total: {{ prixEnEuros(guichet.total) }}</p>
           <button

@@ -4,11 +4,11 @@ import { computed, ref } from 'vue'
 import { api } from '@/services/api'
 import { lirePlan, separerLesPlacesPrises } from '@/services/planDeSalle'
 import type { Element } from '@/types/pagination'
-import type { PlaceDuPlan, PlanDeSalle, Reservation } from '@/types/reservation'
+import type { BilletChoisi, PlaceDuPlan, PlanDeSalle, Reservation } from '@/types/reservation'
 
 /**
- * Réservation en ligne (US-08): le plan de salle d'une séance, les places choisies,
- * puis la réservation qui les bloque pendant 10 minutes.
+ * Réservation en ligne (US-08 et US-09): le plan de salle d'une séance, les places choisies,
+ * la réservation qui les bloque pendant 10 minutes, puis son paiement.
  */
 export const useReservationStore = defineStore('reservation', () => {
   const plan = ref<PlanDeSalle | null>(null)
@@ -70,6 +70,31 @@ export const useReservationStore = defineStore('reservation', () => {
   }
 
   /**
+   * Envoie le tarif choisi pour chaque place et ouvre le paiement: renvoie l'adresse de la page
+   * de paiement de Stripe, où le spectateur saisit sa carte.
+   */
+  async function payer(enCours: Reservation, tarifs: Record<number, number>): Promise<string> {
+    const reponse = await api.post<Element<{ url: string }>>(
+      `/reservations/${enCours.id}/paiement`,
+      {
+        billets: enCours.places.map((place): BilletChoisi => ({
+          place_id: place.id,
+          tarif_id: tarifs[place.id] ?? 0,
+        })),
+      },
+    )
+    return reponse.data.url
+  }
+
+  /** Au retour de la page de paiement: l'API demande à Stripe si le paiement est accepté. */
+  async function verifierPaiement(id: number): Promise<Reservation> {
+    reservation.value = (
+      await api.post<Element<Reservation>>(`/reservations/${id}/paiement/verification`)
+    ).data
+    return reservation.value
+  }
+
+  /**
    * Abandonne la réservation et remet ses places dans la sélection, pour la modifier sur
    * le plan. Renvoie la séance, dont le plan s'ouvre ensuite.
    */
@@ -91,5 +116,7 @@ export const useReservationStore = defineStore('reservation', () => {
     chargerReservation,
     abandonner,
     modifier,
+    payer,
+    verifierPaiement,
   }
 })
