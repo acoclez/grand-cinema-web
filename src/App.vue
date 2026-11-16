@@ -22,6 +22,7 @@ async function seDeconnecter() {
     </nav>
     <nav v-if="auth.aUnDesRoles(PERSONNEL_DU_GUICHET)" aria-label="Guichet">
       <RouterLink :to="{ name: 'seances' }">Vendre au guichet</RouterLink>
+      <RouterLink :to="{ name: 'recherche-reservations' }">Rechercher une réservation</RouterLink>
     </nav>
     <nav v-if="auth.aUnDesRoles(['administrateur'])" aria-label="Back-office">
       <RouterLink :to="{ name: 'admin-films' }">Films</RouterLink>

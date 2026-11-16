@@ -56,9 +56,11 @@ describe('en-tête et accueil', () => {
 
     simulerSessionOuverte(agent)
     const { page } = await monter(App)
-    const lien = page.find('nav[aria-label="Guichet"] a')
-    expect(lien.text()).toBe('Vendre au guichet')
-    expect(lien.attributes('href')).toBe('/seances')
+    const liens = page.findAll('nav[aria-label="Guichet"] a')
+    expect(liens.map((lien) => [lien.text(), lien.attributes('href')])).toEqual([
+      ['Vendre au guichet', '/seances'],
+      ['Rechercher une réservation', '/guichet/reservations'],
+    ])
     expect(page.find('nav[aria-label="Back-office"]').exists()).toBe(false)
   })
 

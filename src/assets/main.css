@@ -938,3 +938,43 @@ a.bouton {
   color: var(--couleur-erreur);
   background: var(--couleur-erreur-fond);
 }
+
+/* Recherche des réservations au guichet (US-15) */
+/* Un formulaire de filtres reste en ligne, contrairement aux autres formulaires. */
+form.filtres {
+  flex-direction: row;
+}
+
+.tableau__numero {
+  white-space: nowrap;
+}
+
+.tableau__detail {
+  color: var(--couleur-texte-doux);
+  font-size: 0.9rem;
+}
+
+.statut-reservation {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--rayon);
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statut-reservation--confirmee {
+  color: var(--couleur-succes);
+  background: var(--couleur-succes-fond);
+}
+
+.statut-reservation--en_attente {
+  color: var(--couleur-accent-fonce);
+  background: #fdf3e1;
+}
+
+.statut-reservation--annulee,
+.statut-reservation--expiree {
+  color: var(--couleur-texte-doux);
+  background: #f1efec;
+}

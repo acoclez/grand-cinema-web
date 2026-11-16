@@ -265,8 +265,24 @@ export function reservationDeTest(changements: Partial<Reservation> = {}): Reser
       ],
     },
     places: [
-      { id: 21, rangee: 'B', numero: 1, pmr: false, tarif: null, prix_centimes: 0 },
-      { id: 22, rangee: 'B', numero: 2, pmr: false, tarif: null, prix_centimes: 0 },
+      {
+        id: 21,
+        rangee: 'B',
+        numero: 1,
+        pmr: false,
+        tarif: null,
+        prix_centimes: 0,
+        utilise_at: null,
+      },
+      {
+        id: 22,
+        rangee: 'B',
+        numero: 2,
+        pmr: false,
+        tarif: null,
+        prix_centimes: 0,
+        utilise_at: null,
+      },
     ],
     ...changements,
   }
