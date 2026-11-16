@@ -22,8 +22,24 @@ function reservationPayee() {
     expire_at: null,
     secondes_restantes: 0,
     places: [
-      { id: 21, rangee: 'B', numero: 1, pmr: false, tarif: 'Plein', prix_centimes: 950 },
-      { id: 22, rangee: 'B', numero: 2, pmr: false, tarif: 'Réduit', prix_centimes: 700 },
+      {
+        id: 21,
+        rangee: 'B',
+        numero: 1,
+        pmr: false,
+        tarif: 'Plein',
+        prix_centimes: 950,
+        utilise_at: null,
+      },
+      {
+        id: 22,
+        rangee: 'B',
+        numero: 2,
+        pmr: false,
+        tarif: 'Réduit',
+        prix_centimes: 700,
+        utilise_at: null,
+      },
     ],
   })
 }
@@ -184,8 +200,24 @@ describe('réservation en cours', () => {
         paiement: 'refuse',
         montant_centimes: 1400,
         places: [
-          { id: 21, rangee: 'B', numero: 1, pmr: false, tarif: 'Réduit', prix_centimes: 700 },
-          { id: 22, rangee: 'B', numero: 2, pmr: false, tarif: 'Réduit', prix_centimes: 700 },
+          {
+            id: 21,
+            rangee: 'B',
+            numero: 1,
+            pmr: false,
+            tarif: 'Réduit',
+            prix_centimes: 700,
+            utilise_at: null,
+          },
+          {
+            id: 22,
+            rangee: 'B',
+            numero: 2,
+            pmr: false,
+            tarif: 'Réduit',
+            prix_centimes: 700,
+            utilise_at: null,
+          },
         ],
       }),
     })

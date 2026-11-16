@@ -113,6 +113,19 @@ export const routes: RouteRecordRaw[] = [
     meta: { titre: 'Vente au guichet', roles: PERSONNEL_DU_GUICHET },
   },
   {
+    path: '/guichet/reservations',
+    name: 'recherche-reservations',
+    component: () => import('@/views/RechercheReservationsView.vue'),
+    meta: { titre: 'Rechercher une réservation', roles: PERSONNEL_DU_GUICHET },
+  },
+  {
+    path: '/guichet/reservations/:id(\\d+)',
+    name: 'reservation-guichet',
+    component: () => import('@/views/ReservationGuichetView.vue'),
+    props: (route) => ({ id: Number(route.params.id) }),
+    meta: { titre: 'Réservation', roles: PERSONNEL_DU_GUICHET },
+  },
+  {
     path: '/controle/seances/:id(\\d+)',
     name: 'controle',
     component: () => import('@/views/ControleView.vue'),
