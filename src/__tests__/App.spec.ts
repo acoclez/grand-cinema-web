@@ -1,0 +1,87 @@
+import { flushPromises } from '@vue/test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { administrateur, agent, monter, simulerSessionOuverte } from '@/__tests__/outils'
+import App from '@/App.vue'
+import { api } from '@/services/api'
+
+vi.mock('@/services/api', () => import('@/__tests__/apiSimulee'))
+
+describe('en-tête et accueil', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.resetAllMocks()
+  })
+
+  it('un visiteur peut se connecter ou créer un compte', async () => {
+    const { page } = await monter(App)
+
+    const liens = page.findAll('nav[aria-label="Compte"] a').map((lien) => lien.text())
+    expect(liens).toEqual(['Se connecter', 'Créer un compte'])
+    expect(page.find('main').text()).toContain('Créez votre compte')
+    const programmation = page.findAll('nav[aria-label="Programmation"] a')
+    expect(programmation.map((lien) => lien.attributes('href'))).toEqual(['/films', '/seances'])
+  })
+
+  it('un compte connecté voit son espace et se déconnecte', async () => {
+    simulerSessionOuverte()
+    vi.mocked(api.post).mockResolvedValue(undefined)
+    const { page, router } = await monter(App, '/mon-compte')
+    expect(page.find('main').text()).toContain('Bonjour Camille')
+
+    await page.find('nav button').trigger('click')
+    await flushPromises()
+
+    expect(api.post).toHaveBeenCalledWith('/auth/deconnexion')
+    expect(router.currentRoute.value.name).toBe('accueil')
+    expect(page.findAll('nav a').map((lien) => lien.text())).toContain('Se connecter')
+  })
+
+  it('seul l administrateur voit les liens du back-office', async () => {
+    simulerSessionOuverte()
+    const spectateur = await monter(App)
+    expect(spectateur.page.find('nav[aria-label="Back-office"]').exists()).toBe(false)
+
+    simulerSessionOuverte(administrateur)
+    const { page } = await monter(App)
+    expect(
+      page.findAll('nav[aria-label="Back-office"] a').map((lien) => lien.attributes('href')),
+    ).toEqual(['/admin/films', '/admin/seances', '/admin/salles'])
+  })
+
+  it('l agent d accueil et l administrateur voient le lien du guichet', async () => {
+    simulerSessionOuverte()
+    const spectateur = await monter(App)
+    expect(spectateur.page.find('nav[aria-label="Guichet"]').exists()).toBe(false)
+
+    simulerSessionOuverte(agent)
+    const { page } = await monter(App)
+    const liens = page.findAll('nav[aria-label="Guichet"] a')
+    expect(liens.map((lien) => [lien.text(), lien.attributes('href')])).toEqual([
+      ['Vendre au guichet', '/seances'],
+      ['Rechercher une réservation', '/guichet/reservations'],
+    ])
+    expect(page.find('nav[aria-label="Back-office"]').exists()).toBe(false)
+  })
+
+  it('seul le spectateur voit le lien vers ses billets', async () => {
+    simulerSessionOuverte()
+    const spectateur = await monter(App)
+    const liens = spectateur.page.findAll('nav[aria-label="Compte"] a')
+    expect(liens.map((lien) => lien.text())).toEqual(['Mes billets', 'Mon espace'])
+    expect(liens[0]?.attributes('href')).toBe('/mes-billets')
+
+    simulerSessionOuverte(agent)
+    const { page } = await monter(App)
+    expect(page.findAll('nav[aria-label="Compte"] a').map((lien) => lien.text())).toEqual([
+      'Mon espace',
+    ])
+  })
+
+  it('l accueil salue un compte connecté', async () => {
+    simulerSessionOuverte()
+    const { page } = await monter(App)
+
+    expect(page.find('main').text()).toContain('Bonjour Camille, bienvenue au Grand Cinéma.')
+  })
+})

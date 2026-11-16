@@ -1,35 +1,980 @@
-@import './base.css';
+:root {
+  --couleur-fond: #ffffff;
+  --couleur-texte: #1f1d1a;
+  --couleur-texte-doux: #5c5750;
+  --couleur-bordure: #d6d1ca;
+  --couleur-accent: #9b1c24;
+  --couleur-accent-fonce: #7a141b;
+  --couleur-erreur: #b3261e;
+  --couleur-erreur-fond: #fbeaea;
+  --couleur-succes: #1e6b3a;
+  --couleur-succes-fond: #e8f4ec;
+  --rayon: 6px;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+  color: var(--couleur-texte);
+  background: var(--couleur-fond);
+}
 
 #app {
-  max-width: 1280px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+  padding: 0 1rem 3rem;
 }
 
 a,
-.green {
+.bouton-lien {
+  color: var(--couleur-accent);
+}
+
+a:hover,
+.bouton-lien:hover {
+  color: var(--couleur-accent-fonce);
+}
+
+:focus-visible {
+  outline: 3px solid var(--couleur-accent);
+  outline-offset: 2px;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin: 0 0 1.5rem;
+}
+
+/* En-tête */
+.entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--couleur-bordure);
+}
+
+.entete__marque {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--couleur-texte);
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+.entete nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Formulaires */
+.page-formulaire {
+  max-width: 28rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.champ label {
+  font-weight: 600;
+}
+
+.champ input,
+.champ textarea,
+.champ select,
+.panier__place select {
+  font: inherit;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+}
+
+[aria-invalid='true'] {
+  border-color: var(--couleur-erreur);
+  outline-color: var(--couleur-erreur);
+}
+
+.champ__facultatif {
+  font-weight: 400;
+  color: var(--couleur-texte-doux);
+}
+
+.champ__aide,
+.champ__erreur {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.champ__aide {
+  color: var(--couleur-texte-doux);
+}
+
+.champ__erreur {
+  color: var(--couleur-erreur);
+}
+
+.case {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 0.5rem;
+  align-items: start;
+}
+
+.case input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0.2rem 0 0;
+}
+
+.case .champ__erreur {
+  grid-column: 2;
+}
+
+/* Boutons */
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.bouton {
+  display: inline-block;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: var(--rayon);
+  background: var(--couleur-accent);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.bouton:hover,
+a.bouton:hover {
+  color: #ffffff;
+  background: var(--couleur-accent-fonce);
+}
+
+.bouton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.bouton-lien {
+  padding: 0;
+  border: none;
+  background: none;
+  text-decoration: underline;
+}
+
+/* Messages */
+.message {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--rayon);
+}
+
+.message p {
+  margin: 0 0 0.25rem;
+}
+
+.message--erreur {
+  color: var(--couleur-erreur);
+  background: var(--couleur-erreur-fond);
+}
+
+.message--succes {
+  color: var(--couleur-succes);
+  background: var(--couleur-succes-fond);
+}
+
+/* Liste de définitions: fiche d'un film */
+.profil {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1.5rem;
+}
+
+.profil dt {
+  font-weight: 600;
+}
+
+.profil dd {
+  margin: 0;
+}
+
+/* Mon espace */
+.zone-sensible {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--couleur-bordure);
+}
+
+.zone-sensible__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin: 0;
+}
+
+.bouton--danger {
+  background: var(--couleur-erreur);
+}
+
+.bouton--danger:hover {
+  background: #8c1d17;
+}
+
+/* Back-office */
+.titre-page {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.titre-page h1 {
+  margin: 0;
+}
+
+a.bouton {
+  text-decoration: none;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Sur un petit écran, seul le tableau défile, pas la page. */
+.tableau-defilant {
+  position: relative;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.tableau {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableau caption {
+  text-align: left;
+  color: var(--couleur-texte-doux);
+  padding-bottom: 0.5rem;
+}
+
+.tableau th,
+.tableau td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--couleur-bordure);
+  text-align: left;
+  vertical-align: top;
+}
+
+.tableau thead th {
+  white-space: nowrap;
+}
+
+.tableau tbody th {
+  font-weight: 600;
+}
+
+.tableau__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  white-space: nowrap;
+}
+
+.bouton-lien:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Texte lu par les lecteurs d'écran, invisible à l'écran. */
+.visuellement-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Séances */
+.filtres {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.filtres select,
+.filtres input {
+  font: inherit;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+}
+
+.filtres__jours {
+  display: flex;
+  gap: 1rem;
+  padding-bottom: 0.6rem;
+}
+
+.tarif {
+  display: block;
+  white-space: nowrap;
+}
+
+.etat {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--rayon);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.etat--publiee {
+  color: var(--couleur-succes);
+  background: var(--couleur-succes-fond);
+}
+
+.etat--brouillon {
+  color: var(--couleur-texte-doux);
+  background: #f0efec;
+}
+
+.tarifs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+}
+
+.tarifs legend {
+  font-weight: 600;
+  padding: 0 0.25rem;
+}
+
+.tarifs__ligne {
+  display: grid;
+  grid-template-columns: 1fr 8rem auto;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.tarifs__ligne > .bouton-lien {
+  padding-bottom: 0.7rem;
+}
+
+.tarifs > .bouton-lien {
+  align-self: flex-start;
+}
+
+/* Sur un téléphone, le libellé et le prix d'un tarif passent l'un sous l'autre. */
+@media (max-width: 30rem) {
+  .tarifs__ligne {
+    grid-template-columns: 1fr;
+  }
+
+  .tarifs__ligne > .bouton-lien {
+    justify-self: start;
+    padding-bottom: 0;
   }
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
+/* Films à l'affiche */
+.grille-films {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 1.5rem 1rem;
+}
+
+.carte-film__lien {
+  display: block;
+  color: var(--couleur-texte);
+  text-decoration: none;
+}
+
+.carte-film__lien:hover .carte-film__titre {
+  color: var(--couleur-accent);
+  text-decoration: underline;
+}
+
+.carte-film__titre {
+  font-size: 1rem;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.carte-film__details {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--couleur-texte-doux);
+}
+
+.affiche {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--rayon);
+  background: #f0efec;
+}
+
+.affiche--vide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--couleur-texte-doux);
+  border: 1px solid var(--couleur-bordure);
+}
+
+.fil-ariane {
+  margin: 0 0 1rem;
+}
+
+.fiche-film {
+  display: grid;
+  grid-template-columns: minmax(10rem, 16rem) 1fr;
+  align-items: start;
+  gap: 2rem;
+}
+
+.fiche-film__texte h1 {
+  margin-bottom: 1rem;
+}
+
+.fiche-film__texte h2 {
+  font-size: 1.25rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.fiche-film__synopsis {
+  max-width: 40rem;
+}
+
+@media (max-width: 40rem) {
+  .fiche-film {
+    grid-template-columns: 1fr;
   }
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+  .fiche-film .affiche {
+    max-width: 14rem;
   }
+}
+
+/* Séances du public */
+.accueil__liens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.seances__jour {
+  margin: 0 0 1rem;
+  font-weight: 600;
+}
+
+.seances-film {
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  align-items: start;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--couleur-bordure);
+}
+
+.seances-film__titre {
+  font-size: 1.125rem;
+  margin: 0 0 0.25rem;
+}
+
+.horaires {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.horaire {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 9rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  font-size: 0.875rem;
+}
+
+.horaire__heure {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.horaire__version {
+  font-weight: 600;
+}
+
+.horaire__salle,
+.horaire__places {
+  color: var(--couleur-texte-doux);
+}
+
+.horaire--complet {
+  background: #f0efec;
+}
+
+.horaire--complet .horaire__heure {
+  color: var(--couleur-texte-doux);
+}
+
+.remplissage {
+  align-self: flex-start;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--rayon);
+  font-weight: 600;
+}
+
+.remplissage--bientot {
+  color: var(--couleur-accent-fonce);
+  background: var(--couleur-erreur-fond);
+}
+
+.remplissage--complet {
+  color: var(--couleur-texte);
+  background: var(--couleur-bordure);
+}
+
+@media (max-width: 30rem) {
+  .seances-film {
+    grid-template-columns: 4rem 1fr;
+  }
+
+  .horaire {
+    flex: 1 1 8rem;
+    min-width: 0;
+  }
+}
+
+/* Remplissage des séances (back-office) */
+.bilan-remplissage {
+  margin: 0 0 1rem;
+  font-weight: 600;
+}
+
+.remplissage-seance span {
+  display: block;
+  white-space: nowrap;
+}
+
+.remplissage-seance meter {
+  width: 6rem;
+}
+
+.remplissage-seance__taux {
+  font-weight: 600;
+}
+
+.remplissage-seance__detail {
+  font-size: 0.875rem;
+  color: var(--couleur-texte-doux);
+}
+
+.horaire__reserver {
+  margin-top: 0.25rem;
+  font-weight: 600;
+}
+
+/* Plan de salle (US-08) */
+.plan-seance,
+.plan-libres {
+  color: var(--couleur-texte-doux);
+}
+
+.plan {
+  margin: 1rem 0;
+}
+
+/* Sur un petit écran, seul le plan défile, pas la page. */
+.plan__defilant {
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.plan__ecran {
+  max-width: 28rem;
+  margin: 0 auto 1.25rem;
+  padding: 0.25rem;
+  border-bottom: 4px solid var(--couleur-texte-doux);
+  text-align: center;
+  font-size: 0.875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--couleur-texte-doux);
+}
+
+.plan__salle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  width: max-content;
+  min-width: 100%;
+}
+
+.plan__rangee {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.plan__nom-rangee {
+  width: 1.5rem;
+  align-self: center;
+  font-weight: 600;
+  color: var(--couleur-texte-doux);
+}
+
+.place {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 2px solid var(--couleur-bordure);
+  border-radius: 6px 6px 3px 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.place--libre {
+  background: #ffffff;
+  color: var(--couleur-texte);
+}
+
+.place--libre:hover:not(:disabled) {
+  border-color: var(--couleur-accent);
+}
+
+.place--choisie {
+  border-color: var(--couleur-accent-fonce);
+  background: var(--couleur-accent);
+  color: #ffffff;
+}
+
+.place--occupee {
+  border-color: #b9b3ab;
+  background: #b9b3ab;
+  color: #4a463f;
+  cursor: not-allowed;
+}
+
+.place--pmr {
+  border-color: #2f5f9e;
+  border-style: double;
+  border-width: 4px;
+}
+
+.place:disabled:not(.place--occupee) {
+  cursor: default;
+}
+
+.legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+}
+
+.legende li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legende .place {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.selection {
+  margin-top: 1rem;
+}
+
+.selection__resume {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Vente au guichet (US-16) */
+.panier {
+  margin-top: 1.5rem;
+}
+
+.panier__places {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.panier__place {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.panier__place label {
+  min-width: 6rem;
+  font-weight: 600;
+}
+
+.panier__total {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Paiement en ligne (US-09) */
+.paiement__securite {
+  margin: 1rem 0 0;
+  color: var(--couleur-texte-doux);
+  font-size: 0.9rem;
+}
+
+.paiement__retour .bouton-lien {
+  margin-left: 0.25rem;
+}
+
+.compte-a-rebours strong {
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Billets électroniques (US-10) */
+.billets {
+  margin-top: 2rem;
+}
+
+.billets h2 {
+  margin-bottom: 0.25rem;
+}
+
+.billets__seance {
+  margin: 0 0 1rem;
+  color: var(--couleur-texte-doux);
+}
+
+.billets__liste {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.billet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  text-align: center;
+}
+
+.billet p {
+  margin: 0;
+}
+
+.billet__qr {
+  width: 11.25rem;
+  max-width: 100%;
+  height: auto;
+  /* Le QR code reste lisible par le lecteur, même en thème sombre. */
+  background: #ffffff;
+}
+
+.billet__place {
+  font-weight: 600;
+}
+
+.billet__utilise {
+  color: var(--couleur-texte-doux);
+  font-style: italic;
+}
+
+/* Contrôle des billets à l'entrée (US-11) */
+.horaire__controle {
+  font-weight: 600;
+}
+
+.controle__camera {
+  display: none;
+  position: relative;
+  max-width: 28rem;
+  margin: 1rem 0;
+}
+
+.controle__camera--active {
+  display: block;
+}
+
+.controle__video {
+  display: block;
+  width: 100%;
+  border-radius: var(--rayon);
+  background: #000000;
+}
+
+.controle__resultat {
+  margin-top: 1.5rem;
+}
+
+.controle__consigne {
+  color: var(--couleur-texte-doux);
+}
+
+.resultat-controle {
+  max-width: 28rem;
+  padding: 1rem 1.25rem;
+  border: 2px solid currentColor;
+  border-radius: var(--rayon);
+}
+
+.resultat-controle p {
+  margin: 0 0 0.5rem;
+}
+
+.resultat-controle__titre {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.resultat-controle__billet {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  color: var(--couleur-texte);
+}
+
+.resultat-controle__billet dt {
+  color: var(--couleur-texte-doux);
+}
+
+.resultat-controle__billet dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.resultat-controle--valide {
+  color: var(--couleur-succes);
+  background: var(--couleur-succes-fond);
+}
+
+.resultat-controle--deja_utilise {
+  color: var(--couleur-accent-fonce);
+  background: #fdf3e1;
+}
+
+.resultat-controle--invalide {
+  color: var(--couleur-erreur);
+  background: var(--couleur-erreur-fond);
+}
+
+/* Recherche des réservations au guichet (US-15) */
+/* Un formulaire de filtres reste en ligne, contrairement aux autres formulaires. */
+form.filtres {
+  flex-direction: row;
+}
+
+.tableau__numero {
+  white-space: nowrap;
+}
+
+.tableau__detail {
+  color: var(--couleur-texte-doux);
+  font-size: 0.9rem;
+}
+
+.statut-reservation {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--rayon);
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statut-reservation--confirmee {
+  color: var(--couleur-succes);
+  background: var(--couleur-succes-fond);
+}
+
+.statut-reservation--en_attente {
+  color: var(--couleur-accent-fonce);
+  background: #fdf3e1;
+}
+
+.statut-reservation--annulee,
+.statut-reservation--expiree {
+  color: var(--couleur-texte-doux);
+  background: #f1efec;
 }
