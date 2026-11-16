@@ -20,6 +20,10 @@ const vente = computed(() =>
     : { page: 'plan-de-salle', libelle: 'Choisir ses places' },
 )
 const aujourdhui = jourIso()
+/** Le personnel du guichet contrôle les billets à l'entrée, le jour de la séance. */
+const controleOuvert = computed(
+  () => auth.aUnDesRoles(PERSONNEL_DU_GUICHET) && programmation.jour === aujourdhui,
+)
 const chargement = ref(true)
 const erreur = ref<string | null>(null)
 
@@ -130,6 +134,14 @@ onMounted(charger)
                   {{ vente.libelle }}
                 </RouterLink>
               </template>
+              <RouterLink
+                v-if="controleOuvert"
+                class="horaire__controle"
+                :to="{ name: 'controle', params: { id: seance.id } }"
+                :aria-label="`Contrôler les billets pour ${groupe.film.titre} à ${heureDe(seance.debut)}, ${seance.salle.nom}`"
+              >
+                Contrôler les billets
+              </RouterLink>
             </li>
           </ul>
         </div>

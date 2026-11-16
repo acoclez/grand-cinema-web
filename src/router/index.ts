@@ -113,6 +113,13 @@ export const routes: RouteRecordRaw[] = [
     meta: { titre: 'Vente au guichet', roles: PERSONNEL_DU_GUICHET },
   },
   {
+    path: '/controle/seances/:id(\\d+)',
+    name: 'controle',
+    component: () => import('@/views/ControleView.vue'),
+    props: (route) => ({ id: Number(route.params.id) }),
+    meta: { titre: 'Contrôle des billets', roles: PERSONNEL_DU_GUICHET },
+  },
+  {
     path: '/connexion',
     name: 'connexion',
     component: () => import('@/views/ConnexionView.vue'),

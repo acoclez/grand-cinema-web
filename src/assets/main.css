@@ -859,3 +859,82 @@ a.bouton {
   color: var(--couleur-texte-doux);
   font-style: italic;
 }
+
+/* Contrôle des billets à l'entrée (US-11) */
+.horaire__controle {
+  font-weight: 600;
+}
+
+.controle__camera {
+  display: none;
+  position: relative;
+  max-width: 28rem;
+  margin: 1rem 0;
+}
+
+.controle__camera--active {
+  display: block;
+}
+
+.controle__video {
+  display: block;
+  width: 100%;
+  border-radius: var(--rayon);
+  background: #000000;
+}
+
+.controle__resultat {
+  margin-top: 1.5rem;
+}
+
+.controle__consigne {
+  color: var(--couleur-texte-doux);
+}
+
+.resultat-controle {
+  max-width: 28rem;
+  padding: 1rem 1.25rem;
+  border: 2px solid currentColor;
+  border-radius: var(--rayon);
+}
+
+.resultat-controle p {
+  margin: 0 0 0.5rem;
+}
+
+.resultat-controle__titre {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.resultat-controle__billet {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  color: var(--couleur-texte);
+}
+
+.resultat-controle__billet dt {
+  color: var(--couleur-texte-doux);
+}
+
+.resultat-controle__billet dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.resultat-controle--valide {
+  color: var(--couleur-succes);
+  background: var(--couleur-succes-fond);
+}
+
+.resultat-controle--deja_utilise {
+  color: var(--couleur-accent-fonce);
+  background: #fdf3e1;
+}
+
+.resultat-controle--invalide {
+  color: var(--couleur-erreur);
+  background: var(--couleur-erreur-fond);
+}

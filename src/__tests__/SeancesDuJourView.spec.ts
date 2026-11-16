@@ -1,3 +1,4 @@
+import { flushPromises } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { agent, monter, seancePubliqueDeTest, simulerSessionOuverte } from '@/__tests__/outils'
@@ -103,6 +104,40 @@ describe('page des séances', () => {
     expect(lien.attributes('aria-label')).toBe(
       'Vendre au guichet pour Le Souffle du Festival à 20:30, Salle 3',
     )
+  })
+
+  it('le jour même, le personnel contrôle les billets de chaque séance, même complète', async () => {
+    simulerSessionOuverte(agent)
+    vi.mocked(api.get).mockResolvedValue({
+      data: [
+        seancePubliqueDeTest({ id: 4 }),
+        seancePubliqueDeTest({ id: 5, complet: true, places_restantes: 0 }),
+      ],
+    })
+    const { page } = await monter(SeancesDuJourView, '/seances')
+
+    const liens = page.findAll('.horaire__controle')
+    expect(liens.map((lien) => lien.attributes('href'))).toEqual([
+      '/controle/seances/4',
+      '/controle/seances/5',
+    ])
+    expect(liens[0]?.text()).toBe('Contrôler les billets')
+    expect(liens[0]?.attributes('aria-label')).toBe(
+      'Contrôler les billets pour Le Souffle du Festival à 20:30, Salle 3',
+    )
+
+    // Un autre jour, les billets ne se contrôlent pas encore.
+    await page.findAll('.filtres__jours button')[1]!.trigger('click')
+    await flushPromises()
+    expect(page.find('.horaire__controle').exists()).toBe(false)
+  })
+
+  it('un spectateur ne voit pas le contrôle des billets', async () => {
+    simulerSessionOuverte()
+    vi.mocked(api.get).mockResolvedValue({ data: [seancePubliqueDeTest({ id: 4 })] })
+    const { page } = await monter(SeancesDuJourView, '/seances')
+
+    expect(page.find('.horaire__controle').exists()).toBe(false)
   })
 
   it('changer de date recharge les séances, sans revenir avant aujourd hui', async () => {
